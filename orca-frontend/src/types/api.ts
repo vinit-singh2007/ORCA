@@ -637,3 +637,107 @@ export interface OrganizationPage {
   page_size: number;
 }
 
+// ==========================================
+// 9. Prototype API Types (Handoff 6 Nov 2026 §2)
+// ==========================================
+
+export interface PrototypeConfig {
+  profile: string;
+  source_mode: string;
+  supabase_url?: string;
+  supabase_anon_key?: string;
+  gemini_configured: boolean;
+  showcase_available: boolean;
+  study: {
+    method: string;
+    region: string;
+    current_period: string;
+    baseline_period: string;
+  };
+  baseline?: {
+    years: number[];
+    description: string;
+  };
+}
+
+export interface PrototypePlanStep {
+  step: string;
+  description?: string;
+}
+
+export interface PrototypePlan {
+  method: string;
+  planner: 'guided' | 'gemini' | string;
+  source_mode: string;
+  summary: string;
+  scope: string;
+  baseline: string;
+  steps: (string | PrototypePlanStep)[];
+  bundle_digest?: string;
+  limitations: string[];
+}
+
+export interface PrototypeInvestigation {
+  id: UUID;
+  project_id: UUID;
+  question: string;
+  state: 'planned' | 'approved';
+  plan: PrototypePlan;
+  created_at: RFC3339UTC;
+  updated_at?: RFC3339UTC;
+}
+
+export interface DailyEntry {
+  date: string;
+  current_mean: number;
+  baseline_mean: number;
+  anomaly: number;
+}
+
+export interface InputSnapshot {
+  year: number;
+  id: string;
+  sha256?: string;
+}
+
+export interface SeasonalResult {
+  method: string;
+  source_mode: string;
+  units: string;
+  current_mean: number;
+  baseline_mean: number;
+  anomaly: number;
+  daily: DailyEntry[];
+  bbox: [number, number, number, number];
+  area_km2: number;
+  spatial_coverage: number;
+  temporal_coverage?: number;
+  current_cells: number;
+  baseline_cells: number;
+  baseline_years: number[];
+  scientific_status: string;
+  uncertainty: string;
+  limitations: string[];
+  bundle_digest?: string;
+  metadata_digest?: string;
+  input_snapshots: InputSnapshot[];
+  analysis_as_of: string;
+  license_ref?: string;
+  redistribution_permitted?: boolean;
+  method_code_digest?: string;
+  input_parser_digest?: string;
+}
+
+export interface PrototypeRun {
+  id: UUID;
+  project_id: UUID;
+  investigation_id: UUID;
+  status: 'queued' | 'running' | 'succeeded' | 'failed';
+  progress?: number;
+  result?: SeasonalResult;
+  result_digest?: string;
+  error_code?: string;
+  created_at: RFC3339UTC;
+  updated_at: RFC3339UTC;
+}
+

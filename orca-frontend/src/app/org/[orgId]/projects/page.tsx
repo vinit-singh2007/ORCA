@@ -39,8 +39,9 @@ export default function ProjectsIndexPage() {
 
   // New project form state
   const [newProjectName, setNewProjectName] = useState('');
+  const [newProjectSlug, setNewProjectSlug] = useState('');
   const [newProjectDesc, setNewProjectDesc] = useState('');
-  const [newProjectAccess, setNewProjectAccess] = useState<AccessClass>('organization');
+  const [newProjectVisibility, setNewProjectVisibility] = useState<'organization' | 'project' | 'restricted' | 'confidential'>('organization');
   const [creating, setCreating] = useState(false);
 
   const fetchProjects = () => {
@@ -49,7 +50,7 @@ export default function ProjectsIndexPage() {
     setError(null);
 
     apiClient
-      .listProjects({ org_id: orgId, state: filterState === 'all' ? undefined : filterState })
+      .listProjects({ organization_id: orgId, state: filterState === 'all' ? undefined : filterState })
       .then((res) => {
         if (res?.items) {
           setProjects(res.items);
@@ -80,13 +81,13 @@ export default function ProjectsIndexPage() {
       await apiClient.createProject({
         organization_id: orgId,
         name: newProjectName,
+        slug: newProjectSlug || newProjectName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
         description: newProjectDesc,
-        access_class: newProjectAccess,
-        visibility: 'private',
-        default_data_policy: 'pinned_versions_only',
+        visibility: newProjectVisibility,
       });
       setShowCreateModal(false);
       setNewProjectName('');
+      setNewProjectSlug('');
       setNewProjectDesc('');
       fetchProjects();
     } catch (err) {
@@ -293,6 +294,21 @@ export default function ProjectsIndexPage() {
 
                 <div>
                   <label className="font-semibold text-[#111827] block mb-1">
+                    Slug (URL identifier) *
+                  </label>
+                  <input suppressHydrationWarning
+                    type="text"
+                    required
+                    placeholder="e.g. lakshadweep-sst-2025"
+                    value={newProjectSlug}
+                    onChange={(e) => setNewProjectSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}
+                    className="w-full border border-[#E5E7EB] rounded p-2 focus:outline-none focus:border-[#111827] font-mono"
+                  />
+                  <p className="text-[10px] text-[#9CA3AF] mt-0.5">Lowercase letters, numbers, hyphens only.</p>
+                </div>
+
+                <div>
+                  <label className="font-semibold text-[#111827] block mb-1">
                     Scientific Description
                   </label>
                   <textarea suppressHydrationWarning
@@ -306,17 +322,17 @@ export default function ProjectsIndexPage() {
 
                 <div>
                   <label className="font-semibold text-[#111827] block mb-1">
-                    Access Classification *
+                    Visibility *
                   </label>
                   <select suppressHydrationWarning
-                    value={newProjectAccess}
-                    onChange={(e) => setNewProjectAccess(e.target.value as AccessClass)}
+                    value={newProjectVisibility}
+                    onChange={(e) => setNewProjectVisibility(e.target.value as typeof newProjectVisibility)}
                     className="w-full border border-[#E5E7EB] rounded p-2 focus:outline-none focus:border-[#111827]"
                   >
-                    <option value="internal">Internal (Organization members)</option>
-                    <option value="restricted">Restricted (Project invited members only)</option>
-                    <option value="confidential">Confidential (Restricted + Audit Trail)</option>
-                    <option value="public">Public (Open institutional access)</option>
+                    <option value="organization">Organization (all org members)</option>
+                    <option value="project">Project (invited members only)</option>
+                    <option value="restricted">Restricted (project + explicit grants)</option>
+                    <option value="confidential">Confidential (restricted + audit trail)</option>
                   </select>
                 </div>
 

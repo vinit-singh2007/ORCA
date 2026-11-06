@@ -128,6 +128,32 @@ export default function InvestigationsLibraryPage() {
           </Link>
         </div>
 
+        {/* Prototype Investigation Banner */}
+        <div className="p-4 border border-[#E5E7EB] bg-white rounded flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-sm text-[#111827]">
+                Prototype Investigation Flow
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
+                /v1/prototype/*
+              </span>
+            </div>
+            <p className="text-xs text-[#4B5563]">
+              Ask a question → review a generated plan → approve → run analysis → download report.
+              January 2025 SST vs 2003–2022 reference, Arabian Sea.
+            </p>
+            <p className="text-[10px] text-[#9CA3AF]">Latest 30 investigations per project. Links open run pages.</p>
+          </div>
+          <Link
+            href={`/org/${orgId}/research/prototype/new`}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-[#111827] text-[#111827] text-xs font-semibold rounded hover:bg-[#111827] hover:text-[#FFFFFF] transition shrink-0 self-start sm:self-center"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Start New Prototype Investigation</span>
+          </Link>
+        </div>
+
         {/* Backend Error Banner */}
         {error && (
           <div className="p-3 border border-[#E5E7EB] bg-[#F8F9FA] rounded text-xs text-[#4B5563] flex items-center justify-between">

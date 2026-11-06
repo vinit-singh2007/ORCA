@@ -36,6 +36,7 @@ import {
   ChevronRight,
   ChevronLeft,
   ChevronDown,
+  FlaskConical,
 } from 'lucide-react';
 
 export function Sidebar() {
@@ -91,6 +92,7 @@ export function Sidebar() {
           <div className="space-y-1">
             {navItem(orgId ? `/org/${orgId}/overview` : '/workspaces', 'Overview', <Activity className="w-4 h-4" />)}
             {navItem(orgId ? `/org/${orgId}/research/demo` : '/workspaces', 'Research Demo', <Sparkles className="w-4 h-4 text-[#111827]" />)}
+            {navItem(orgId ? `/org/${orgId}/research/prototype/new` : '/workspaces', 'Prototype Research', <FlaskConical className="w-4 h-4" />)}
             {navItem(orgId ? `/org/${orgId}/projects` : '/workspaces', 'Projects', <FolderKanban className="w-4 h-4" />)}
             {navItem(orgId ? `/org/${orgId}/research/investigations` : '/workspaces', 'Investigations', <FileSearch className="w-4 h-4" />)}
             {navItem(orgId ? `/org/${orgId}/data/products` : '/workspaces', 'Data & Methods', <Database className="w-4 h-4" />)}

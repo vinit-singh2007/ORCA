@@ -362,10 +362,9 @@ export class OrcaApiClient {
   async createProject(body: {
     organization_id: string;
     name: string;
+    slug: string;
     description?: string;
-    visibility: 'public' | 'private';
-    default_data_policy?: string;
-    access_class: T.AccessClass;
+    visibility: 'organization' | 'project' | 'restricted' | 'confidential';
   }) {
     return this.request<T.ResearchProject>('/v1/research/projects', {
       method: 'POST',
@@ -1207,6 +1206,122 @@ export class OrcaApiClient {
       details: Record<string, unknown>;
       timestamp: string;
     }>>('/v1/admin/audit-events', { params });
+  }
+
+  // ========================================================
+  // §4. Prototype Research API (/v1/prototype/*)
+  // Handoff 6 Nov 2026 — Hackathon runtime contract
+  // ========================================================
+
+  /** GET /v1/prototype/config — Public prototype configuration (no auth required) */
+  async getPrototypeConfig(): Promise<T.PrototypeConfig> {
+    return this.request<T.PrototypeConfig>('/v1/prototype/config');
+  }
+
+  /** POST /v1/prototype/investigations — Create investigation (question → plan) */
+  async createPrototypeInvestigation(
+    projectId: string,
+    question: string,
+    idempotencyKey?: string
+  ): Promise<T.PrototypeInvestigation> {
+    return this.request<T.PrototypeInvestigation>('/v1/prototype/investigations', {
+      method: 'POST',
+      body: JSON.stringify({ project_id: projectId, question }),
+      idempotencyKey,
+    });
+  }
+
+  /** GET /v1/prototype/investigations?project_id=UUID — List investigations for project */
+  async listPrototypeInvestigations(projectId: string): Promise<{ items: T.PrototypeInvestigation[]; total?: number }> {
+    return this.request<{ items: T.PrototypeInvestigation[]; total?: number }>(
+      '/v1/prototype/investigations',
+      { params: { project_id: projectId } }
+    );
+  }
+
+  /** GET /v1/prototype/investigations/{id}?project_id=UUID — Investigation detail */
+  async getPrototypeInvestigation(id: string, projectId: string): Promise<T.PrototypeInvestigation> {
+    return this.request<T.PrototypeInvestigation>(`/v1/prototype/investigations/${id}`, {
+      params: { project_id: projectId },
+    });
+  }
+
+  /** POST /v1/prototype/investigations/{id}/approve?project_id=UUID — Approve plan */
+  async approvePrototypePlan(id: string, projectId: string, idempotencyKey?: string): Promise<T.PrototypeInvestigation> {
+    return this.request<T.PrototypeInvestigation>(`/v1/prototype/investigations/${id}/approve`, {
+      method: 'POST',
+      body: JSON.stringify({}),
+      params: { project_id: projectId },
+      idempotencyKey,
+    });
+  }
+
+  /** POST /v1/prototype/runs — Submit run (requires Idempotency-Key) */
+  async submitPrototypeRun(
+    projectId: string,
+    investigationId: string,
+    idempotencyKey: string
+  ): Promise<T.PrototypeRun> {
+    return this.request<T.PrototypeRun>('/v1/prototype/runs', {
+      method: 'POST',
+      body: JSON.stringify({ project_id: projectId, investigation_id: investigationId }),
+      idempotencyKey,
+    });
+  }
+
+  /** GET /v1/prototype/runs/{id}?project_id=UUID — Poll run status */
+  async getPrototypeRun(runId: string, projectId: string): Promise<T.PrototypeRun> {
+    return this.request<T.PrototypeRun>(`/v1/prototype/runs/${runId}`, {
+      params: { project_id: projectId },
+    });
+  }
+
+  /** GET /v1/prototype/runs?project_id=UUID — List runs for project */
+  async listPrototypeRuns(projectId: string, investigationId?: string): Promise<{ items: T.PrototypeRun[] }> {
+    return this.request<{ items: T.PrototypeRun[] }>('/v1/prototype/runs', {
+      params: {
+        project_id: projectId,
+        ...(investigationId ? { investigation_id: investigationId } : {}),
+      },
+    });
+  }
+
+  /** GET /v1/prototype/runs/{run_id}/report?project_id=UUID — Authenticated Markdown report download */
+  async downloadPrototypeReport(runId: string, projectId: string, accessToken: string): Promise<Blob> {
+    const url = `${this.baseUrl}/v1/prototype/runs/${runId}/report?project_id=${encodeURIComponent(projectId)}`;
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: 'text/markdown, text/plain, */*',
+        'X-Request-ID': this.generateIdempotencyKey(),
+      },
+      credentials: 'omit',
+    });
+    if (response.status === 409) {
+      throw new OrcaApiError(409, {
+        type: 'https://docs.orca.example/problems/not-ready',
+        title: 'Report Not Ready',
+        status: 409,
+        detail: 'The report is not yet ready. The run may still be processing.',
+        instance: `/v1/prototype/runs/${runId}/report`,
+        code: 'REPORT_NOT_READY',
+        request_id: '',
+        retryable: true,
+      });
+    }
+    if (!response.ok) {
+      throw new OrcaApiError(response.status, {
+        type: 'https://docs.orca.example/problems/http-error',
+        title: 'Report Download Failed',
+        status: response.status,
+        detail: `Report download failed with status ${response.status}`,
+        instance: `/v1/prototype/runs/${runId}/report`,
+        code: `HTTP_${response.status}`,
+        request_id: '',
+        retryable: response.status >= 500,
+      });
+    }
+    return response.blob();
   }
 }
 
