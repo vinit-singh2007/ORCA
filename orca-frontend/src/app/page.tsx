@@ -140,7 +140,7 @@ export default function EntryPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {/* Card 1: Research Studio Quick Jump */}
           <Link
-            href={`/org/${activeOrg.id}/research/investigations`}
+            href={activeOrg ? `/org/${activeOrg.id}/research/investigations` : '/workspaces'}
             className="border border-[#E5E7EB] rounded p-4 bg-[#FFFFFF] hover:border-[#111827] transition space-y-2 block"
           >
             <div className="flex items-center justify-between text-xs">

@@ -194,16 +194,16 @@ export function Header() {
                       router.push(`/org/${org.id}/overview`);
                     }}
                     className={`w-full text-left px-3 py-2 hover:bg-[#F3F4F6] flex items-center justify-between ${
-                      org.id === activeOrg.id ? 'font-semibold text-[#111827] bg-[#F8F9FA]' : 'text-[#4B5563]'
+                      activeOrg && org.id === activeOrg.id ? 'font-semibold text-[#111827] bg-[#F8F9FA]' : 'text-[#4B5563]'
                     }`}
                   >
                     <span className="truncate">{org.name}</span>
-                    {org.id === activeOrg.id && <span className="text-[10px] font-mono">Active</span>}
+                    {activeOrg && org.id === activeOrg.id && <span className="text-[10px] font-mono">Active</span>}
                   </button>
                 ))
               ) : (
                 <div className="px-3 py-2 text-xs text-[#6B7280]">
-                  {activeOrg.name}
+                  {activeOrg ? activeOrg.name : 'No organization selected'}
                 </div>
               )}
               <div className="border-t border-[#E5E7EB] pt-1 mt-1">
