@@ -38,7 +38,7 @@ export const dynamic = 'force-dynamic';
 
 export default function UsageQuotasPage() {
   const params = useParams();
-  const orgId = (params?.orgId as string) || '00000000-0000-4000-8000-000000000010';
+  const orgId = (params?.orgId as string) || '';
 
   return (
     <Shell>

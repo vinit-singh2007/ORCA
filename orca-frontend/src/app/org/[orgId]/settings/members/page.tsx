@@ -1,102 +1,94 @@
 /**
- * ORCA 3.0 — I08 Members & Invitations Screen
+ * ORCA 3.0 — I08 Institutional Members & Permissions Screen
  * 
  * DESIGN SPECIFICATION:
- * - dashboard design.md §5.2 Screen I08 (Members & invitations)
+ * - dashboard design.md §5.3 Screen I08 (Members & roles)
  * - UI URL: /org/[orgId]/settings/members
- * - Primary personas: Org Owner, Org Admin, PI
- * - Highest referenced API gate: P02 (Institutional management)
+ * - Primary personas: Institutional Owner, Admin, PI
+ * - Highest referenced API gate: P08 (RBAC, Multi-Org & Tenant Fencing)
  * 
  * CONTRACT REFERENCES:
  * - api design.md §3.2: GET /v1/organizations/{id}/members (list members)
- * - api design.md §3.2: POST /v1/invitations (invite new researcher or auditor)
- * - api design.md §3.2: DELETE /v1/organizations/{id}/members/{user_id} (remove member)
+ * - api design.md §3.2: POST /v1/organizations/{id}/members (grant member role)
  * 
  * TRUTH BOUNDARY & VISUAL TOKENS:
- * - Strict monochrome white/neutral tokens (dashboard design.md §2: #FFFFFF, #E5E7EB, #111827)
- * - Role-based permissions matrix clearly distinguished
+ * - Strict monochrome tokens (#FFFFFF, #E5E7EB, #111827)
+ * - Zero mock data dependencies
+ * - Dynamic loading, error, and empty states
  */
 
 'use client';
 
-import React, { useState } from 'react';
+export const dynamic = 'force-dynamic';
+
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Shell } from '@/components/layout/Shell';
 import { Badge } from '@/components/ui/Badge';
+import { apiClient } from '@/lib/api-client';
+import { Member, ResearchRole } from '@/types/api';
 import {
   Users,
   UserPlus,
-  Mail,
   Shield,
-  MoreVertical,
   Trash2,
+  Mail,
+  Clock,
+  ArrowLeft,
   CheckCircle2,
+  AlertCircle,
+  RefreshCw,
 } from 'lucide-react';
-
-export const dynamic = 'force-dynamic';
-
-interface Member {
-  id: string;
-  name: string;
-  email: string;
-  role: 'owner' | 'principal_investigator' | 'researcher' | 'data_steward' | 'auditor';
-  joinedAt: string;
-  status: 'active' | 'pending';
-}
-
-const INITIAL_MEMBERS: Member[] = [
-  {
-    id: '00000000-0000-4000-8000-000000000001',
-    name: 'Dr. Vinit (You)',
-    email: 'vinit@nori.ocean.gov.in',
-    role: 'principal_investigator',
-    joinedAt: '2026-01-15T08:00:00Z',
-    status: 'active',
-  },
-  {
-    id: '00000000-0000-4000-8000-000000000002',
-    name: 'Dr. Ananya Sharma',
-    email: 'ananya.s@nori.ocean.gov.in',
-    role: 'researcher',
-    joinedAt: '2026-02-01T10:30:00Z',
-    status: 'active',
-  },
-  {
-    id: '00000000-0000-4000-8000-000000000003',
-    name: 'Dr. Marcus Vance',
-    email: 'm.vance@ocean-alliance.org',
-    role: 'auditor',
-    joinedAt: '2026-09-12T14:20:00Z',
-    status: 'pending',
-  },
-];
 
 export default function MembersSettingsPage() {
   const params = useParams();
-  const orgId = (params?.orgId as string) || '00000000-0000-4000-8000-000000000010';
+  const orgId = (params?.orgId as string) || '';
 
-  const [members, setMembers] = useState<Member[]>(INITIAL_MEMBERS);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [showInviteModal, setShowInviteModal] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteRole, setInviteRole] = useState<'researcher' | 'principal_investigator' | 'data_steward' | 'auditor'>('researcher');
+  const [userIdInput, setUserIdInput] = useState('');
+  const [inviteRole, setInviteRole] = useState<ResearchRole>('researcher');
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSendInvite = (e: React.FormEvent) => {
+  const loadMembers = async () => {
+    if (!orgId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await apiClient.listMembers(orgId);
+      setMembers(res.items || []);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to load organization members');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadMembers();
+  }, [orgId]);
+
+  const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inviteEmail) return;
-
-    const newMember: Member = {
-      id: `00000000-0000-4000-8000-${Date.now().toString().slice(-12)}`,
-      name: inviteEmail.split('@')[0],
-      email: inviteEmail,
-      role: inviteRole,
-      joinedAt: new Date().toISOString(),
-      status: 'pending',
-    };
-
-    setMembers([...members, newMember]);
-    setInviteEmail('');
-    setShowInviteModal(false);
+    if (!userIdInput || !orgId) return;
+    setSubmitting(true);
+    try {
+      await apiClient.createInvitation(orgId, {
+        email: userIdInput,
+        role: inviteRole,
+      });
+      setUserIdInput('');
+      setShowInviteModal(false);
+      loadMembers();
+    } catch (err: unknown) {
+      alert(`Failed to add member: ${err instanceof Error ? err.message : 'API error'}`);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -104,7 +96,7 @@ export default function MembersSettingsPage() {
       <div className="space-y-6 max-w-5xl">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-[#6B7280]">
-          <Link href={`/org/${orgId}/overview`} className="hover:text-[#111827]">
+          <Link href={orgId ? `/org/${orgId}/overview` : '/workspaces'} className="hover:text-[#111827]">
             Institution
           </Link>
           <span>/</span>
@@ -119,83 +111,100 @@ export default function MembersSettingsPage() {
             <div className="flex items-center gap-2.5">
               <h1 className="text-xl font-semibold text-[#111827]">Institutional Members & Roles</h1>
               <span className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
-                I08 · P02
+                I08 · P08
               </span>
             </div>
             <p className="text-xs text-[#4B5563] mt-1">
-              Manage scientific researchers, principal investigators, data stewards, and independent auditors.
+              Manage scientific staff, roles, and cryptographic attestation permissions for this organization.
             </p>
           </div>
 
-          <button
-            onClick={() => setShowInviteModal(true)}
-            className="px-3.5 py-2 text-xs font-medium rounded bg-[#111827] text-[#FFFFFF] hover:bg-[#1F2937] transition flex items-center gap-1.5"
-          >
-            <UserPlus className="w-3.5 h-3.5" />
-            <span>Invite Institutional Member</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={loadMembers}
+              disabled={loading}
+              className="p-1.5 border border-[#E5E7EB] rounded hover:border-[#111827] text-[#111827]"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+            <button
+              onClick={() => setShowInviteModal(true)}
+              className="px-3 py-1.5 text-xs font-medium rounded bg-[#111827] text-[#FFFFFF] hover:bg-[#1F2937] transition flex items-center gap-1.5"
+            >
+              <UserPlus className="w-3.5 h-3.5" />
+              <span>Add Member</span>
+            </button>
+          </div>
         </div>
+
+        {/* Loading / Error States */}
+        {loading && (
+          <div className="border border-[#E5E7EB] rounded p-6 bg-[#FFFFFF] animate-pulse space-y-3">
+            <div className="h-4 w-48 bg-[#E5E7EB] rounded" />
+            <div className="h-20 bg-[#F8F9FA] rounded" />
+          </div>
+        )}
+
+        {error && (
+          <div className="p-4 border border-[#E5E7EB] rounded bg-[#FFFFFF] space-y-2">
+            <div className="flex items-center gap-2 text-[#DC2626] text-xs font-semibold">
+              <AlertCircle className="w-4 h-4" />
+              Error Loading Members
+            </div>
+            <p className="text-xs text-[#4B5563] font-mono">{error}</p>
+          </div>
+        )}
 
         {/* Members Table */}
-        <div className="border border-[#E5E7EB] rounded bg-[#FFFFFF] overflow-hidden">
-          <div className="px-4 py-3 border-b border-[#E5E7EB] bg-[#F8F9FA] flex justify-between items-center text-xs">
-            <span className="font-semibold text-[#111827]">Active & Invited Members</span>
-            <span className="font-mono text-[#6B7280] text-[11px]">{members.length} members</span>
+        {!loading && !error && members.length === 0 && (
+          <div className="p-12 text-center border border-[#E5E7EB] rounded bg-[#FFFFFF] space-y-2">
+            <Users className="w-8 h-8 text-[#9CA3AF] mx-auto" />
+            <h3 className="text-sm font-semibold text-[#111827]">No members registered</h3>
+            <p className="text-xs text-[#6B7280]">Add researchers or administrators to grant organization access.</p>
           </div>
+        )}
 
-          <table className="w-full text-xs text-left">
-            <thead className="bg-[#FFFFFF] border-b border-[#E5E7EB] text-[#6B7280] font-mono text-[11px]">
-              <tr>
-                <th className="px-4 py-2.5">Name / Email</th>
-                <th className="px-4 py-2.5">Assigned Role</th>
-                <th className="px-4 py-2.5">Status</th>
-                <th className="px-4 py-2.5">Joined Date</th>
-                <th className="px-4 py-2.5 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#E5E7EB]">
-              {members.map((member) => (
-                <tr key={member.id} className="hover:bg-[#F8F9FA]">
-                  <td className="px-4 py-3">
-                    <div className="font-medium text-[#111827]">{member.name}</div>
-                    <div className="text-[11px] text-[#6B7280]">{member.email}</div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="capitalize font-mono text-xs text-[#111827]">
-                      {member.role.replace('_', ' ')}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant={member.status === 'active' ? 'success' : 'outline'}>
-                      {member.status.toUpperCase()}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3 text-[#4B5563] font-mono text-[11px]">
-                    {new Date(member.joinedAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    {member.id !== '00000000-0000-4000-8000-000000000001' && (
-                      <button
-                        onClick={() => setMembers(members.filter((m) => m.id !== member.id))}
-                        className="text-[#6B7280] hover:text-[#111827] p-1"
-                        title="Revoke access"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </td>
+        {!loading && !error && members.length > 0 && (
+          <div className="border border-[#E5E7EB] rounded bg-[#FFFFFF] overflow-hidden">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-[#E5E7EB] bg-[#F8F9FA] text-[11px] font-mono text-[#6B7280]">
+                  <th className="py-2.5 px-4 font-medium">User ID / Principal</th>
+                  <th className="py-2.5 px-4 font-medium">Assigned Role</th>
+                  <th className="py-2.5 px-4 font-medium">Granted At</th>
+                  <th className="py-2.5 px-4 font-medium">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-[#E5E7EB]">
+                {members.map((member) => (
+                  <tr key={member.id} className="hover:bg-[#F9FAFB] transition">
+                    <td className="py-3 px-4 font-mono text-[#111827]">
+                      {member.display_name || member.user_id}
+                    </td>
+                    <td className="py-3 px-4">
+                      <Badge variant="outline">{member.role.replace('_', ' ')}</Badge>
+                    </td>
+                    <td className="py-3 px-4 font-mono text-[11px] text-[#6B7280]">
+                      {member.joined_at ? new Date(member.joined_at).toLocaleDateString() : 'N/A'}
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className="text-[11px] text-[#16A34A] font-medium capitalize">
+                        {member.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
-        {/* Invite Member Modal */}
+        {/* Add Member Modal */}
         {showInviteModal && (
-          <div className="fixed inset-0 bg-[#000000] bg-opacity-30 z-50 flex items-center justify-center p-4">
-            <div className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-lg max-w-md w-full p-5 space-y-4 shadow-sm">
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+            <div className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-lg max-w-md w-full p-6 space-y-4 shadow-lg">
               <div className="flex justify-between items-center border-b border-[#E5E7EB] pb-3">
-                <h3 className="text-sm font-semibold text-[#111827]">Invite Institutional Member</h3>
+                <h3 className="text-sm font-semibold text-[#111827]">Grant Organization Access</h3>
                 <button
                   onClick={() => setShowInviteModal(false)}
                   className="text-xs text-[#6B7280] hover:text-[#111827]"
@@ -204,50 +213,48 @@ export default function MembersSettingsPage() {
                 </button>
               </div>
 
-              <form onSubmit={handleSendInvite} className="space-y-4 text-xs">
+              <form onSubmit={handleAddMember} className="space-y-4 text-xs">
                 <div>
-                  <label className="text-[11px] font-medium text-[#4B5563] block mb-1">
-                    Work Email Address
-                  </label>
+                  <label className="block text-[#4B5563] font-medium mb-1">User ID (Principal UUID)</label>
                   <input
-                    type="email"
+                    type="text"
                     required
-                    placeholder="researcher@institute.edu"
-                    value={inviteEmail}
-                    onChange={(e) => setInviteEmail(e.target.value)}
-                    className="w-full px-3 py-2 border border-[#E5E7EB] rounded bg-[#FFFFFF] text-[#111827] focus:outline-none focus:border-[#111827]"
+                    placeholder="e.g. usr-9812-4a01..."
+                    value={userIdInput}
+                    onChange={(e) => setUserIdInput(e.target.value)}
+                    className="w-full px-3 py-2 border border-[#E5E7EB] rounded font-mono text-xs focus:outline-none focus:border-[#111827]"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-medium text-[#4B5563] block mb-1">
-                    Institutional Role
-                  </label>
+                  <label className="block text-[#4B5563] font-medium mb-1">Institutional Role</label>
                   <select
                     value={inviteRole}
-                    onChange={(e) => setInviteRole(e.target.value as any)}
-                    className="w-full px-3 py-2 border border-[#E5E7EB] rounded bg-[#FFFFFF] text-[#111827] focus:outline-none focus:border-[#111827]"
+                    onChange={(e) => setInviteRole(e.target.value as ResearchRole)}
+                    className="w-full px-3 py-2 border border-[#E5E7EB] rounded bg-[#FFFFFF] text-xs focus:outline-none focus:border-[#111827]"
                   >
-                    <option value="researcher">Researcher (Run investigations, inspect evidence)</option>
-                    <option value="principal_investigator">Principal Investigator (Approve plans & publications)</option>
-                    <option value="data_steward">Data Steward (Manage sources and snapshots)</option>
-                    <option value="auditor">Auditor (Read-only verification & audit logs)</option>
+                    <option value="principal_investigator">Principal Investigator (Full Research Sign-off)</option>
+                    <option value="researcher">Researcher (Run Investigations & Recipes)</option>
+                    <option value="data_steward">Data Steward (Catalog & Product Management)</option>
+                    <option value="auditor">Auditor (Read & Verification Only)</option>
+                    <option value="org_admin">Organization Admin</option>
                   </select>
                 </div>
 
-                <div className="flex justify-end gap-2 pt-2 border-t border-[#E5E7EB]">
+                <div className="pt-2 flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => setShowInviteModal(false)}
-                    className="px-3 py-1.5 border border-[#E5E7EB] rounded text-[#4B5563] hover:bg-[#F3F4F6]"
+                    className="px-3 py-1.5 border border-[#E5E7EB] rounded text-[#4B5563] hover:text-[#111827]"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-3 py-1.5 bg-[#111827] text-[#FFFFFF] rounded hover:bg-[#1F2937]"
+                    disabled={submitting}
+                    className="px-3 py-1.5 bg-[#111827] text-[#FFFFFF] rounded font-medium hover:bg-[#1F2937]"
                   >
-                    Send Invitation
+                    {submitting ? 'Granting...' : 'Grant Access'}
                   </button>
                 </div>
               </form>
@@ -258,4 +265,3 @@ export default function MembersSettingsPage() {
     </Shell>
   );
 }
-

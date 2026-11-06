@@ -1,176 +1,176 @@
 /**
- * ORCA 3.0 — I09 External Access Grants Screen
+ * ORCA 3.0 — I09 Access & Sharing Grants Screen
  * 
  * DESIGN SPECIFICATION:
- * - dashboard design.md §5.2 Screen I09 (External access grants)
+ * - dashboard design.md §5.3 Screen I09 (Access & sharing grants)
  * - UI URL: /org/[orgId]/settings/access
- * - Primary personas: Org Admin, Data Steward, PI
- * - Highest referenced API gate: P02 (Institutional management)
+ * - Primary personas: Project lead, Data steward, Org Admin
+ * - Highest referenced API gate: P08 (RBAC, Multi-Org & Tenant Fencing)
  * 
  * CONTRACT REFERENCES:
- * - api design.md §3.2: GET /v1/access-grants (list outbound and inbound access grants)
- * - api design.md §3.2: POST /v1/access-grants (create cryptographically signed grant)
- * - api design.md §3.2: DELETE /v1/access-grants/{id} (revoke grant)
+ * - api design.md §3.2: GET /v1/organizations/{org_id}/access-grants (list active grants)
  * 
  * TRUTH BOUNDARY & VISUAL TOKENS:
- * - Strict monochrome white/neutral tokens (dashboard design.md §2: #FFFFFF, #E5E7EB, #111827)
- * - Scoped permission tokens and non-transferable capability delegation
+ * - Strict monochrome tokens (#FFFFFF, #E5E7EB, #111827)
+ * - Zero mock data dependencies
+ * - Dynamic loading, error, and empty states
  */
 
 'use client';
 
-import React, { useState } from 'react';
+export const dynamic = 'force-dynamic';
+
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Shell } from '@/components/layout/Shell';
 import { Badge } from '@/components/ui/Badge';
+import { apiClient } from '@/lib/api-client';
+import { AccessGrant } from '@/types/api';
 import {
   KeyRound,
   ShieldCheck,
   Plus,
   Trash2,
-  ExternalLink,
-  Lock,
-  Globe,
+  Clock,
+  ArrowLeft,
+  AlertCircle,
+  RefreshCw,
 } from 'lucide-react';
-
-export const dynamic = 'force-dynamic';
-
-interface AccessGrant {
-  id: string;
-  granteeType: 'external_organization' | 'auditor' | 'federated_agent';
-  granteeName: string;
-  resourceScope: string;
-  permissions: string[];
-  expiresAt: string;
-  status: 'active' | 'expired';
-}
-
-const INITIAL_GRANTS: AccessGrant[] = [
-  {
-    id: '00000000-0000-4000-8000-000000000101',
-    granteeType: 'external_organization',
-    granteeName: 'Marine Coastal Alliance (MCA)',
-    resourceScope: 'urn:orca:project:00000000-0000-4000-8000-000000000101:*',
-    permissions: ['project:read', 'evidence:read'],
-    expiresAt: '2026-12-31T23:59:59Z',
-    status: 'active',
-  },
-  {
-    id: '00000000-0000-4000-8000-000000000102',
-    granteeType: 'federated_agent',
-    granteeName: 'coastal-sentinel.eth (Agent A2A)',
-    resourceScope: 'urn:orca:investigation:00000000-0000-4000-8000-000000000201:inputs',
-    permissions: ['dataset:read'],
-    expiresAt: '2026-11-30T00:00:00Z',
-    status: 'active',
-  },
-];
 
 export default function AccessGrantsPage() {
   const params = useParams();
-  const orgId = (params?.orgId as string) || '00000000-0000-4000-8000-000000000010';
+  const orgId = (params?.orgId as string) || '';
 
-  const [grants, setGrants] = useState<AccessGrant[]>(INITIAL_GRANTS);
+  const [grants, setGrants] = useState<AccessGrant[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleRevoke = (id: string) => {
-    setGrants(grants.filter((g) => g.id !== id));
+  const loadGrants = async () => {
+    if (!orgId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await apiClient.listAccessGrants(orgId);
+      setGrants(res.items || []);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to load access grants');
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    loadGrants();
+  }, [orgId]);
 
   return (
     <Shell>
       <div className="space-y-6 max-w-5xl">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-[#6B7280]">
-          <Link href={`/org/${orgId}/overview`} className="hover:text-[#111827]">
+          <Link href={orgId ? `/org/${orgId}/overview` : '/workspaces'} className="hover:text-[#111827]">
             Institution
           </Link>
           <span>/</span>
           <span className="text-[#6B7280]">Settings</span>
           <span>/</span>
-          <span className="text-[#111827] font-medium">Access Grants</span>
+          <span className="text-[#111827] font-medium">Access & Sharing</span>
         </div>
 
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#E5E7EB] pb-5">
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-xl font-semibold text-[#111827]">External Access Grants & Delegation</h1>
+              <h1 className="text-xl font-semibold text-[#111827]">Cross-Tenant Access Grants</h1>
               <span className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
-                I09 · P02
+                I09 · P08
               </span>
             </div>
             <p className="text-xs text-[#4B5563] mt-1">
-              Issue time-bounded cryptographic access grants to partner oceanographic institutes and external verifiers.
+              Time-bound cryptographic delegations to external institutions and verified federated agents.
             </p>
           </div>
 
-          <button
-            onClick={() => alert('New access grant modal ready (POST /access-grants).')}
-            className="px-3.5 py-2 text-xs font-medium rounded bg-[#111827] text-[#FFFFFF] hover:bg-[#1F2937] transition flex items-center gap-1.5"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Issue Scoped Access Grant</span>
-          </button>
-        </div>
-
-        {/* Grants Table */}
-        <div className="border border-[#E5E7EB] rounded bg-[#FFFFFF] overflow-hidden">
-          <div className="px-4 py-3 border-b border-[#E5E7EB] bg-[#F8F9FA] flex justify-between items-center text-xs">
-            <span className="font-semibold text-[#111827]">Active External Grants</span>
-            <span className="font-mono text-[#6B7280] text-[11px]">{grants.length} grants active</span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={loadGrants}
+              disabled={loading}
+              className="p-1.5 border border-[#E5E7EB] rounded hover:border-[#111827] text-[#111827]"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+            <Link
+              href="/network/tasks"
+              className="px-3 py-1.5 text-xs font-medium rounded bg-[#111827] text-[#FFFFFF] hover:bg-[#1F2937] transition flex items-center gap-1.5"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Issue New Grant</span>
+            </Link>
           </div>
-
-          <table className="w-full text-xs text-left">
-            <thead className="bg-[#FFFFFF] border-b border-[#E5E7EB] text-[#6B7280] font-mono text-[11px]">
-              <tr>
-                <th className="px-4 py-2.5">Grantee</th>
-                <th className="px-4 py-2.5">Target Resource URN</th>
-                <th className="px-4 py-2.5">Granted Scopes</th>
-                <th className="px-4 py-2.5">Expires</th>
-                <th className="px-4 py-2.5 text-right">Revoke</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#E5E7EB]">
-              {grants.map((grant) => (
-                <tr key={grant.id} className="hover:bg-[#F8F9FA]">
-                  <td className="px-4 py-3">
-                    <div className="font-medium text-[#111827]">{grant.granteeName}</div>
-                    <div className="text-[10px] font-mono text-[#6B7280] capitalize">
-                      {grant.granteeType.replace('_', ' ')}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 font-mono text-[10px] text-[#4B5563] max-w-xs truncate">
-                    {grant.resourceScope}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-1 flex-wrap">
-                      {grant.permissions.map((p, i) => (
-                        <span key={i} className="text-[9px] font-mono bg-[#F3F4F6] px-1.5 py-0.5 rounded text-[#111827]">
-                          {p}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-[#4B5563] font-mono text-[11px]">
-                    {new Date(grant.expiresAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <button
-                      onClick={() => handleRevoke(grant.id)}
-                      className="text-[#6B7280] hover:text-[#111827] p-1"
-                      title="Revoke Grant"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
+
+        {/* Loading / Error States */}
+        {loading && (
+          <div className="border border-[#E5E7EB] rounded p-6 bg-[#FFFFFF] animate-pulse space-y-3">
+            <div className="h-4 w-48 bg-[#E5E7EB] rounded" />
+            <div className="h-20 bg-[#F8F9FA] rounded" />
+          </div>
+        )}
+
+        {error && (
+          <div className="p-4 border border-[#E5E7EB] rounded bg-[#FFFFFF] space-y-2">
+            <div className="flex items-center gap-2 text-[#DC2626] text-xs font-semibold">
+              <AlertCircle className="w-4 h-4" />
+              Error Loading Access Grants
+            </div>
+            <p className="text-xs text-[#4B5563] font-mono">{error}</p>
+          </div>
+        )}
+
+        {/* Grants List */}
+        {!loading && !error && grants.length === 0 && (
+          <div className="p-12 text-center border border-[#E5E7EB] rounded bg-[#FFFFFF] space-y-2">
+            <KeyRound className="w-8 h-8 text-[#9CA3AF] mx-auto" />
+            <h3 className="text-sm font-semibold text-[#111827]">No active cross-tenant grants</h3>
+            <p className="text-xs text-[#6B7280]">
+              No external institutions or agents have been delegated permissions to research assets.
+            </p>
+          </div>
+        )}
+
+        {!loading && !error && grants.length > 0 && (
+          <div className="space-y-3">
+            {grants.map((grant) => (
+              <div
+                key={grant.id}
+                className="border border-[#E5E7EB] rounded p-4 bg-[#FFFFFF] space-y-3 hover:border-[#111827] transition"
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-semibold text-[#111827]">Grant #{grant.id.slice(0, 8)}</span>
+                      <Badge variant="outline">Principal: {grant.principal_ref?.id || 'Unknown'}</Badge>
+                      <Badge variant="verified">
+                        Status: {grant.revoked_at ? 'revoked' : grant.expires_at && new Date(grant.expires_at) < new Date() ? 'expired' : 'active'}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-[#6B7280] font-mono mt-1">
+                      Resource: {grant.resource_ref ? `${grant.resource_ref.type}:${grant.resource_ref.id}` : 'All Resources'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#E5E7EB] text-[11px] font-mono text-[#6B7280]">
+                  <span>Scopes: {(grant.scopes || []).join(', ') || 'read'}</span>
+                  <span>•</span>
+                  <span>Expires: {grant.expires_at ? new Date(grant.expires_at).toLocaleDateString() : 'Never'}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </Shell>
   );
 }
-

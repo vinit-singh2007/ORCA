@@ -1,82 +1,68 @@
 /**
- * ORCA 3.0 — O03 Durable Queue and Job Health Screen
+ * ORCA 3.0 — O03 Durable Compute Jobs & Worker Leases Screen
  * 
  * DESIGN SPECIFICATION:
- * - dashboard design.md §5.10 Screen O03 (Durable queue and job health)
+ * - dashboard design.md §5.9 Screen O03 (Job queues & durable execution)
  * - UI URL: /admin/jobs
- * - Primary personas: Platform Operator, DevOps Engineer
- * - Highest referenced API gate: P08 (Institutional operations)
+ * - Primary personas: DevOps, SRE, Platform Operator
+ * - Highest referenced API gate: P04 (Durable Execution & Fencing Leases)
  * 
  * CONTRACT REFERENCES:
- * - api design.md §3.14: GET /v1/admin/jobs (durable worker queue status)
- * - api design.md §3.14: POST /v1/admin/jobs/{id}/retry (retry failed dead-letter task)
+ * - api design.md §3.14: GET /v1/admin/job-health (queue depth, stale leases)
+ * - api design.md §3.14: GET /v1/admin/leases (fenced compute worker leases)
  * 
  * TRUTH BOUNDARY & VISUAL TOKENS:
- * - Strict monochrome white/neutral tokens (dashboard design.md §2: #FFFFFF, #E5E7EB, #111827)
- * - Worker node telemetry and execution queues without fake animation graphics
+ * - Strict monochrome tokens (#FFFFFF, #E5E7EB, #111827)
+ * - Zero mock data dependencies
+ * - Dynamic loading, error, and empty states
  */
 
 'use client';
 
-import React, { useState } from 'react';
+export const dynamic = 'force-dynamic';
+
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Shell } from '@/components/layout/Shell';
 import { Badge } from '@/components/ui/Badge';
+import { apiClient } from '@/lib/api-client';
 import {
-  Cpu,
   Layers,
-  RotateCcw,
-  CheckCircle2,
+  Cpu,
   Clock,
+  RotateCw,
   AlertTriangle,
-  Play,
-  Pause,
+  CheckCircle2,
+  AlertCircle,
+  RefreshCw,
 } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export default function JobQueuesAdminPage() {
+  const [jobHealth, setJobHealth] = useState<any | null>(null);
+  const [leases, setLeases] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-interface WorkerJob {
-  id: string;
-  taskType: string;
-  investigationRef: string;
-  workerNode: string;
-  durationSeconds: number;
-  state: 'running' | 'queued' | 'completed' | 'failed';
-  retryCount: number;
-}
+  const loadJobsData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [health, leaseList] = await Promise.all([
+        apiClient.getJobHealth(),
+        apiClient.getLeases().catch(() => []),
+      ]);
+      setJobHealth(health);
+      setLeases(leaseList || []);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to query worker lease health from gateway');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-const MOCK_JOBS: WorkerJob[] = [
-  {
-    id: 'job-9812',
-    taskType: 'science.sst.seasonal_anomaly',
-    investigationRef: '00000000-0000-4000-8000-000000000201',
-    workerNode: 'worker-ocean-gpu-01',
-    durationSeconds: 42,
-    state: 'completed',
-    retryCount: 0,
-  },
-  {
-    id: 'job-9813',
-    taskType: 'catalog.erddap.snapshot_ingest',
-    investigationRef: 'incois-hr-sst-snapshot',
-    workerNode: 'worker-ingest-io-03',
-    durationSeconds: 118,
-    state: 'running',
-    retryCount: 0,
-  },
-  {
-    id: 'job-9814',
-    taskType: 'science.upwelling.bakun_index',
-    investigationRef: '00000000-0000-4000-8000-000000000202',
-    workerNode: 'worker-ocean-cpu-02',
-    durationSeconds: 0,
-    state: 'queued',
-    retryCount: 0,
-  },
-];
-
-export default function DurableJobsPage() {
-  const [jobs, setJobs] = useState<WorkerJob[]>(MOCK_JOBS);
+  useEffect(() => {
+    loadJobsData();
+  }, []);
 
   return (
     <Shell>
@@ -87,91 +73,124 @@ export default function DurableJobsPage() {
             Platform Ops
           </Link>
           <span>/</span>
-          <span className="text-[#111827] font-medium">Job Queues & Workers</span>
+          <span className="text-[#111827] font-medium">Job Queues & Leases</span>
         </div>
 
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#E5E7EB] pb-5">
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-xl font-semibold text-[#111827]">Durable Computation Queues & Node Health</h1>
+              <h1 className="text-xl font-semibold text-[#111827]">Durable Execution & Fencing Leases</h1>
               <span className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
-                O03 · P08
+                O03 · P04
               </span>
             </div>
             <p className="text-xs text-[#4B5563] mt-1">
-              Hermetic worker pool state, running NetCDF processing jobs, and queue concurrency controllers.
+              Distributed worker fencing tokens, monotonic lease renewals, and task queue depth telemetry.
             </p>
           </div>
 
-          <Badge variant="outline">REDIS CELERY BACKEND</Badge>
-        </div>
-
-        {/* Worker Pool Statistics */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="border border-[#E5E7EB] rounded p-4 bg-[#FFFFFF]">
-            <span className="text-xs text-[#6B7280] block">Active Scientific Workers</span>
-            <span className="font-mono text-xl font-semibold text-[#111827] mt-1 block">8 / 8 Online</span>
-          </div>
-          <div className="border border-[#E5E7EB] rounded p-4 bg-[#FFFFFF]">
-            <span className="text-xs text-[#6B7280] block">Queued Computation Tasks</span>
-            <span className="font-mono text-xl font-semibold text-[#111827] mt-1 block">1 Task</span>
-          </div>
-          <div className="border border-[#E5E7EB] rounded p-4 bg-[#FFFFFF]">
-            <span className="text-xs text-[#6B7280] block">Dead-Letter / Failed Retries</span>
-            <span className="font-mono text-xl font-semibold text-[#111827] mt-1 block">0 Failed</span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={loadJobsData}
+              disabled={loading}
+              className="p-1.5 border border-[#E5E7EB] rounded hover:border-[#111827] text-[#111827]"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+            <Link
+              href="/admin/system"
+              className="px-3 py-1.5 text-xs font-medium rounded border border-[#E5E7EB] hover:bg-[#F8F9FA] text-[#111827]"
+            >
+              System Health
+            </Link>
           </div>
         </div>
 
-        {/* Jobs Table */}
-        <div className="border border-[#E5E7EB] rounded bg-[#FFFFFF] overflow-hidden">
-          <div className="px-4 py-3 border-b border-[#E5E7EB] bg-[#F8F9FA] flex justify-between items-center text-xs">
-            <span className="font-semibold text-[#111827]">Recent Durable Job Executions</span>
-            <span className="font-mono text-[#6B7280] text-[11px]">{jobs.length} jobs tracked</span>
+        {/* Loading / Error States */}
+        {loading && (
+          <div className="border border-[#E5E7EB] rounded p-6 bg-[#FFFFFF] animate-pulse space-y-3">
+            <div className="h-4 w-48 bg-[#E5E7EB] rounded" />
+            <div className="h-20 bg-[#F8F9FA] rounded" />
+          </div>
+        )}
+
+        {error && (
+          <div className="p-4 border border-[#E5E7EB] rounded bg-[#FFFFFF] space-y-2">
+            <div className="flex items-center gap-2 text-[#DC2626] text-xs font-semibold">
+              <AlertCircle className="w-4 h-4" />
+              Queue Telemetry Notice
+            </div>
+            <p className="text-xs text-[#4B5563] font-mono">{error}</p>
+          </div>
+        )}
+
+        {/* Telemetry Strip */}
+        {!loading && jobHealth && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+            <div className="p-3 border border-[#E5E7EB] rounded bg-[#FFFFFF]">
+              <span className="text-[#6B7280] text-[10px] block">QUEUED JOBS</span>
+              <span className="text-lg font-bold text-[#111827] mt-0.5 block">{jobHealth.queued_jobs ?? 0}</span>
+            </div>
+            <div className="p-3 border border-[#E5E7EB] rounded bg-[#FFFFFF]">
+              <span className="text-[#6B7280] text-[10px] block">RUNNING WORKERS</span>
+              <span className="text-lg font-bold text-[#111827] mt-0.5 block">{jobHealth.running_jobs ?? 0}</span>
+            </div>
+            <div className="p-3 border border-[#E5E7EB] rounded bg-[#FFFFFF]">
+              <span className="text-[#6B7280] text-[10px] block">STALE LEASES</span>
+              <span className="text-lg font-bold text-[#111827] mt-0.5 block">{jobHealth.stale_leases ?? 0}</span>
+            </div>
+            <div className="p-3 border border-[#E5E7EB] rounded bg-[#FFFFFF]">
+              <span className="text-[#6B7280] text-[10px] block">FAILURES (24H)</span>
+              <span className="text-lg font-bold text-[#111827] mt-0.5 block">{jobHealth.failed_last_24h ?? 0}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Active Worker Leases Table */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-2">
+            <span className="font-mono text-xs font-semibold text-[#111827] uppercase tracking-wider">
+              Monotonic Worker Fencing Leases ({leases.length})
+            </span>
           </div>
 
-          <table className="w-full text-xs text-left">
-            <thead className="bg-[#FFFFFF] border-b border-[#E5E7EB] text-[#6B7280] font-mono text-[11px]">
-              <tr>
-                <th className="px-4 py-2.5">Job ID / Type</th>
-                <th className="px-4 py-2.5">Target Scope</th>
-                <th className="px-4 py-2.5">Worker Node</th>
-                <th className="px-4 py-2.5">Elapsed</th>
-                <th className="px-4 py-2.5 text-right">State</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#E5E7EB]">
-              {jobs.map((job) => (
-                <tr key={job.id} className="hover:bg-[#F8F9FA]">
-                  <td className="px-4 py-3">
-                    <span className="font-mono text-[11px] font-semibold text-[#111827] block">{job.id}</span>
-                    <span className="font-mono text-[10px] text-[#6B7280]">{job.taskType}</span>
-                  </td>
-                  <td className="px-4 py-3 font-mono text-[11px] text-[#4B5563]">
-                    {job.investigationRef.slice(0, 16)}...
-                  </td>
-                  <td className="px-4 py-3 font-mono text-[11px] text-[#111827]">{job.workerNode}</td>
-                  <td className="px-4 py-3 font-mono text-[11px] text-[#6B7280]">{job.durationSeconds}s</td>
-                  <td className="px-4 py-3 text-right">
-                    <Badge
-                      variant={
-                        job.state === 'completed'
-                          ? 'success'
-                          : job.state === 'running'
-                          ? 'outline'
-                          : 'neutral'
-                      }
-                    >
-                      {job.state.toUpperCase()}
-                    </Badge>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {!loading && leases.length === 0 && (
+            <div className="p-12 text-center border border-[#E5E7EB] rounded bg-[#FFFFFF] space-y-2">
+              <Cpu className="w-8 h-8 text-[#9CA3AF] mx-auto" />
+              <h3 className="text-sm font-semibold text-[#111827]">No active worker leases</h3>
+              <p className="text-xs text-[#6B7280]">Compute workers will register fencing tokens here when scientific runs are active.</p>
+            </div>
+          )}
+
+          {!loading && leases.length > 0 && (
+            <div className="border border-[#E5E7EB] rounded bg-[#FFFFFF] overflow-hidden">
+              <table className="w-full text-left text-xs border-collapse font-mono">
+                <thead>
+                  <tr className="border-b border-[#E5E7EB] bg-[#F8F9FA] text-[11px] text-[#6B7280]">
+                    <th className="py-2.5 px-4 font-medium">Worker ID</th>
+                    <th className="py-2.5 px-4 font-medium">Investigation</th>
+                    <th className="py-2.5 px-4 font-medium">Fencing Token</th>
+                    <th className="py-2.5 px-4 font-medium">Expires At</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#E5E7EB]">
+                  {leases.map((lease, i) => (
+                    <tr key={i} className="hover:bg-[#F9FAFB] transition">
+                      <td className="py-3 px-4 font-bold text-[#111827]">{lease.worker_id}</td>
+                      <td className="py-3 px-4 text-[#6B7280]">{lease.investigation_id}</td>
+                      <td className="py-3 px-4">
+                        <Badge variant="verified">Token #{lease.fencing_token}</Badge>
+                      </td>
+                      <td className="py-3 px-4 text-[#6B7280] text-[11px]">{new Date(lease.expires_at).toLocaleTimeString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </Shell>
   );
 }
-

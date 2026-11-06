@@ -17,9 +17,9 @@ export function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-[#FFFFFF] flex flex-col font-sans">
       <Header />
-      <div className="flex flex-1">
+      <div className="flex flex-1 relative">
         <Sidebar />
-        <main className="flex-1 overflow-y-auto p-6 bg-[#FFFFFF]">
+        <main className="flex-1 p-6 bg-[#FFFFFF] min-w-0">
           <div className="max-w-[1400px] mx-auto">
             {children}
           </div>

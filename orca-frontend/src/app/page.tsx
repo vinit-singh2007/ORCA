@@ -61,13 +61,7 @@ export default function EntryPage() {
     };
   }, []);
 
-  const activeOrg = organizations[0] || {
-    id: '00000000-0000-4000-8000-000000000010',
-    name: 'National Oceanographic Research Institute (NORI)',
-    slug: 'nori-ocean',
-    visibility: 'public' as const,
-    verification_status: 'verified' as const,
-  };
+  const activeOrg = organizations[0] || null;
 
   return (
     <Shell>
@@ -92,7 +86,11 @@ export default function EntryPage() {
               Authorized Research Session
             </span>
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#111827]">
-              {loading ? 'Connecting to Institutional Gateway...' : activeOrg.name}
+              {loading
+                ? 'Connecting to Institutional Gateway...'
+                : activeOrg
+                ? activeOrg.name
+                : 'Welcome to ORCA 3.0 Workspace'}
             </h1>
             <p className="text-xs text-[#4B5563] max-w-2xl leading-relaxed">
               Verifiable oceanographic research workspace. Perform bounded scientific investigations, inspect
@@ -101,21 +99,33 @@ export default function EntryPage() {
           </div>
 
           <div className="pt-2 flex flex-wrap items-center gap-3">
-            <Link
-              href={`/org/${activeOrg.id}/overview`}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#111827] hover:bg-[#1F2937] text-[#FFFFFF] text-xs font-medium rounded transition"
-            >
-              <span>Enter Institution Command Centre</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+            {activeOrg ? (
+              <>
+                <Link
+                  href={`/org/${activeOrg.id}/overview`}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#111827] hover:bg-[#1F2937] text-[#FFFFFF] text-xs font-medium rounded transition"
+                >
+                  <span>Enter Institution Command Centre</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
 
-            <Link
-              href={`/org/${activeOrg.id}/projects`}
-              className="inline-flex items-center gap-1.5 px-3 py-2 border border-[#E5E7EB] hover:bg-[#F8F9FA] text-[#111827] text-xs font-medium rounded transition"
-            >
-              <FolderKanban className="w-3.5 h-3.5 text-[#4B5563]" />
-              <span>Browse Research Projects</span>
-            </Link>
+                <Link
+                  href={`/org/${activeOrg.id}/projects`}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 border border-[#E5E7EB] hover:bg-[#F8F9FA] text-[#111827] text-xs font-medium rounded transition"
+                >
+                  <FolderKanban className="w-3.5 h-3.5 text-[#4B5563]" />
+                  <span>Browse Research Projects</span>
+                </Link>
+              </>
+            ) : (
+              <Link
+                href="/workspaces"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-[#111827] hover:bg-[#1F2937] text-[#FFFFFF] text-xs font-medium rounded transition"
+              >
+                <span>Select or Create an Organization in Workspaces</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            )}
 
             <Link
               href="/workspaces"

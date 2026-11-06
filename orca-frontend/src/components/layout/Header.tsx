@@ -77,13 +77,16 @@ export function Header() {
   // Determine active organization
   const activeOrg =
     organizations.find((o) => o.id === currentPathOrgId) ||
-    organizations[0] || {
-      id: currentPathOrgId || '00000000-0000-4000-8000-000000000010',
-      name: 'National Oceanographic Research Institute (NORI)',
-      slug: 'nori-ocean',
-      visibility: 'public' as const,
-      verification_status: 'verified' as const,
-    };
+    organizations[0] ||
+    (currentPathOrgId
+      ? {
+          id: currentPathOrgId,
+          name: 'Current Workspace',
+          slug: 'workspace',
+          visibility: 'public' as const,
+          verification_status: 'verified' as const,
+        }
+      : null);
 
   // Determine current active workspace mode strictly from route
   const isMarine = pathname.startsWith('/marine');
@@ -103,7 +106,7 @@ export function Header() {
         {/* Workspace Mode Switcher (§3.1) */}
         <nav className="hidden md:flex items-center gap-1 border-l border-[#E5E7EB] pl-4" aria-label="Workspaces">
           <Link
-            href={`/org/${activeOrg.id}/overview`}
+            href={activeOrg ? `/org/${activeOrg.id}/overview` : '/workspaces'}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded transition ${
               isInstitution
                 ? 'bg-[#F3F4F6] text-[#111827] font-semibold'
@@ -173,7 +176,7 @@ export function Header() {
             className="flex items-center gap-2 px-2.5 py-1.5 border border-[#E5E7EB] hover:border-[#111827] bg-[#FFFFFF] rounded text-xs transition"
           >
             <span className="w-2 h-2 rounded-full bg-[#111827]" />
-            <span className="font-medium text-[#111827] max-w-[130px] truncate">{activeOrg.name}</span>
+            <span className="font-medium text-[#111827] max-w-[130px] truncate">{activeOrg?.name || 'Workspaces'}</span>
             <ChevronDown className="w-3 h-3 text-[#6B7280]" />
           </button>
 

@@ -40,7 +40,7 @@ import {
 export function Sidebar() {
   const pathname = usePathname();
   const orgMatch = pathname.match(/\/org\/([^/]+)/);
-  const orgId = orgMatch ? orgMatch[1] : '00000000-0000-4000-8000-000000000010';
+  const orgId = orgMatch ? orgMatch[1] : '';
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -70,7 +70,7 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`h-[calc(100vh-3.5rem)] bg-[#FFFFFF] border-r border-[#E5E7EB] flex flex-col justify-between p-3 transition-all duration-200 overflow-y-auto ${
+      className={`sticky top-14 h-[calc(100vh-3.5rem)] bg-[#FFFFFF] border-r border-[#E5E7EB] flex flex-col justify-between p-3 transition-all duration-200 overflow-y-auto shrink-0 z-30 ${
         isCollapsed ? 'w-16' : 'w-56'
       }`}
     >
@@ -88,11 +88,11 @@ export function Sidebar() {
         {/* 1. INSTITUTION NAVIGATION (Max 5 primary links per §4.1) */}
         {isInstitution && (
           <div className="space-y-1">
-            {navItem(`/org/${orgId}/overview`, 'Overview', <Activity className="w-4 h-4" />)}
-            {navItem(`/org/${orgId}/projects`, 'Projects', <FolderKanban className="w-4 h-4" />)}
-            {navItem(`/org/${orgId}/research/investigations`, 'Investigations', <FileSearch className="w-4 h-4" />)}
-            {navItem(`/org/${orgId}/data/products`, 'Data & Methods', <Database className="w-4 h-4" />)}
-            {navItem(`/org/${orgId}/review/inbox`, 'Scientific Reviews', <FileCheck2 className="w-4 h-4" />)}
+            {navItem(orgId ? `/org/${orgId}/overview` : '/workspaces', 'Overview', <Activity className="w-4 h-4" />)}
+            {navItem(orgId ? `/org/${orgId}/projects` : '/workspaces', 'Projects', <FolderKanban className="w-4 h-4" />)}
+            {navItem(orgId ? `/org/${orgId}/research/investigations` : '/workspaces', 'Investigations', <FileSearch className="w-4 h-4" />)}
+            {navItem(orgId ? `/org/${orgId}/data/products` : '/workspaces', 'Data & Methods', <Database className="w-4 h-4" />)}
+            {navItem(orgId ? `/org/${orgId}/review/inbox` : '/workspaces', 'Scientific Reviews', <FileCheck2 className="w-4 h-4" />)}
           </div>
         )}
 
@@ -101,7 +101,7 @@ export function Sidebar() {
           <div className="space-y-1">
             {navItem('/network/agents', 'Discover Agents', <Cpu className="w-4 h-4" />)}
             {navItem('/network/tasks', 'Research Tasks', <Globe className="w-4 h-4" />)}
-            {navItem(`/org/${orgId}/agents`, 'My Agents', <Server className="w-4 h-4" />)}
+            {navItem(orgId ? `/org/${orgId}/agents` : '/network/agents', 'My Agents', <Server className="w-4 h-4" />)}
           </div>
         )}
 

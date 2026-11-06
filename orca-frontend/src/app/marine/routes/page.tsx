@@ -23,6 +23,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Shell } from '@/components/layout/Shell';
 import { Badge } from '@/components/ui/Badge';
+import { apiClient } from '@/lib/api-client';
 import {
   Navigation,
   Anchor,
@@ -32,15 +33,25 @@ import {
   ShieldCheck,
   Compass,
   CheckCircle2,
+  Loader2,
 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
+
+const PORT_COORDINATES: Record<string, [number, number]> = {
+  'Porbandar Port': [21.64, 69.60],
+  'Okha Port': [22.46, 69.07],
+  'Veraval Harbour': [20.90, 70.36],
+  'Mangrol Port': [21.12, 70.11],
+};
 
 export default function RouteExposuresPage() {
   const [origin, setOrigin] = useState('Porbandar Port');
   const [destination, setDestination] = useState('Veraval Harbour');
   const [cruisingSpeedKnots, setCruisingSpeedKnots] = useState('9');
   const [departureTime, setDepartureTime] = useState('2026-11-06T18:00');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [exposureResult, setExposureResult] = useState<{
     totalDistanceNM: number;
     estimatedTransitHours: number;
@@ -49,27 +60,47 @@ export default function RouteExposuresPage() {
     hazardSegments: Array<{ waypoint: string; wave: string; risk: string }>;
   } | null>(null);
 
-  const handleCalculateExposure = (e: React.FormEvent) => {
+  const handleCalculateExposure = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate POST /v1/marine/route-exposures
-    setExposureResult({
-      totalDistanceNM: 64.2,
-      estimatedTransitHours: 7.1,
-      maxSignificantWaveHeight: '3.4 meters',
-      peakWindGust: '58 km/h (Squall)',
-      hazardSegments: [
-        {
-          waypoint: 'Segment 2: Off Navibandar (21°25\'N, 69°45\'E)',
-          wave: '3.4m SW swell',
-          risk: 'HIGH SQUALL RISK: Fishermen warning active',
-        },
-        {
-          waypoint: 'Segment 4: Mangrol Approach (21°05\'N, 70°05\'E)',
-          wave: '2.6m swell',
-          risk: 'MODERATE CHOP: Crossing seas',
-        },
-      ],
-    });
+    setLoading(true);
+    setError(null);
+
+    const origCoords = PORT_COORDINATES[origin] || [21.64, 69.60];
+    const destCoords = PORT_COORDINATES[destination] || [20.90, 70.36];
+    const speed = parseFloat(cruisingSpeedKnots) || 9;
+
+    try {
+      const res = await apiClient.evaluateRoute({
+        origin: origCoords,
+        destination: destCoords,
+        speed_knots: speed,
+      });
+
+      setExposureResult({
+        totalDistanceNM: res.distance_nm,
+        estimatedTransitHours: res.estimated_hours,
+        maxSignificantWaveHeight: `${res.max_wave_height} meters`,
+        peakWindGust: res.max_wave_height > 2.5 ? '48-56 km/h (Active Squall Warning)' : '24-32 km/h (Moderate Breeze)',
+        hazardSegments: res.advisories_intersected?.length > 0
+          ? res.advisories_intersected.map((adv, idx) => ({
+              waypoint: `Segment ${idx + 1}: Coastal Transect (${origin} → ${destination})`,
+              wave: `${res.max_wave_height}m swell`,
+              risk: adv,
+            }))
+          : [
+              {
+                waypoint: `Transect Passage (${origin} → ${destination})`,
+                wave: `${res.max_wave_height}m swell`,
+                risk: 'Standard passage window: normal swell clearance',
+              },
+            ],
+      });
+    } catch (err) {
+      console.error('Failed to calculate route exposure', err);
+      setError('Unable to evaluate route via server. Please verify parameters.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -161,12 +192,24 @@ export default function RouteExposuresPage() {
             </div>
           </div>
 
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded text-xs text-red-700 flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+
           <button
             type="submit"
-            className="w-full py-2.5 bg-[#111827] hover:bg-[#1F2937] text-[#FFFFFF] text-xs font-medium rounded transition flex items-center justify-center gap-1.5"
+            disabled={loading}
+            className="w-full py-2.5 bg-[#111827] hover:bg-[#1F2937] disabled:opacity-50 text-[#FFFFFF] text-xs font-medium rounded transition flex items-center justify-center gap-1.5"
           >
-            <Play className="w-3.5 h-3.5" />
-            <span>Simulate Route Exposure (POST /route-exposures)</span>
+            {loading ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Play className="w-3.5 h-3.5" />
+            )}
+            <span>{loading ? 'Evaluating Passage...' : 'Evaluate Route Exposure (P12 Engine)'}</span>
           </button>
         </form>
 
