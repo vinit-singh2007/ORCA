@@ -110,7 +110,7 @@ export default function InstitutionOverviewPage() {
 
   return (
     <Shell>
-      <div className="space-y-6 max-w-6xl">
+      <div className="space-y-6 w-full">
         {/* Breadcrumb & Navigation Anchor */}
         <div className="flex items-center gap-2 text-xs text-[#6B7280]">
           <span>Institution</span>
@@ -125,7 +125,7 @@ export default function InstitutionOverviewPage() {
               <AlertCircle className="w-4 h-4 text-[#111827]" />
               <span>Backend Notice (GET /v1/organizations/{orgId}): {error}</span>
             </div>
-            <button
+            <button suppressHydrationWarning
               onClick={fetchOverviewData}
               className="px-2.5 py-1 border border-[#111827] rounded text-xs hover:bg-[#111827] hover:text-[#FFFFFF] transition"
             >
@@ -154,7 +154,7 @@ export default function InstitutionOverviewPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <button suppressHydrationWarning
               onClick={fetchOverviewData}
               className="p-2 border border-[#E5E7EB] rounded hover:bg-[#F8F9FA] text-[#6B7280] hover:text-[#111827]"
               title="Refresh Dashboard"
@@ -174,6 +174,52 @@ export default function InstitutionOverviewPage() {
             >
               <Plus className="w-3.5 h-3.5" />
               <span>New Investigation</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Real Research Demo Feature Box per Handoff §8 */}
+        <div className="border-2 border-[#111827] rounded-xl p-5 bg-[#FFFFFF] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-bold text-base text-[#111827]">
+                Descriptive Sea Surface Temperature Research Demo
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#111827] text-[#FFFFFF] font-semibold">
+                Real Verified Backend Slice
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]">
+                Validation Pending
+              </span>
+            </div>
+            <p className="text-xs text-[#4B5563] max-w-2xl leading-relaxed">
+              Preserved MUR SST access sample: 3,751 finite observations, 31 daily sample means, deterministic re-execution, and confirmed Arkiv Rabdi transaction receipt.
+            </p>
+            <div className="flex items-center gap-4 text-xs pt-1 font-mono text-[#6B7280]">
+              <span>Sample Mean: <strong className="text-[#111827]">28.32 °C</strong></span>
+              <span>·</span>
+              <span>Min: <strong className="text-[#111827]">27.45 °C</strong></span>
+              <span>·</span>
+              <span>Max: <strong className="text-[#111827]">29.35 °C</strong></span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            <a
+              href="https://rabdi.explorer.arkiv.network/tx/0x990fe04c31c81d743d79a32e633d0020781be09c5ef82ab50c71881fb976e23d"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-2 border border-[#E5E7EB] hover:bg-[#F8F9FA] text-[#111827] text-xs font-medium rounded transition"
+            >
+              <span>Rabdi Tx</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+            <Link
+              href={`/org/${orgId}/research/demo`}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#111827] hover:bg-[#1F2937] text-[#FFFFFF] text-xs font-semibold rounded shadow-sm transition"
+            >
+              <span>Open Research Demo</span>
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
@@ -334,7 +380,7 @@ export default function InstitutionOverviewPage() {
 
             <div className="flex items-center gap-2 text-xs">
               <span className="text-[#6B7280]">Filter:</span>
-              <button
+              <button suppressHydrationWarning
                 onClick={() => setProjectFilter('all')}
                 className={`px-2 py-0.5 rounded text-[11px] ${
                   projectFilter === 'all'
@@ -344,7 +390,7 @@ export default function InstitutionOverviewPage() {
               >
                 All
               </button>
-              <button
+              <button suppressHydrationWarning
                 onClick={() => setProjectFilter('internal')}
                 className={`px-2 py-0.5 rounded text-[11px] ${
                   projectFilter === 'internal'
@@ -354,7 +400,7 @@ export default function InstitutionOverviewPage() {
               >
                 Internal
               </button>
-              <button
+              <button suppressHydrationWarning
                 onClick={() => setProjectFilter('restricted')}
                 className={`px-2 py-0.5 rounded text-[11px] ${
                   projectFilter === 'restricted'

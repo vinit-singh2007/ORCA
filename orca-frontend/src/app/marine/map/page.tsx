@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ORCA 3.0 — M04 Marine Map & Environmental Conditions Screen
  * 
  * DESIGN SPECIFICATION:
@@ -61,12 +61,12 @@ export default function MarineMapPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-[#E5E7EB] pb-4">
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-xl font-semibold text-[#111827]">Oceanographic Conditions Map</h1>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
+              <h1 className="text-2xl font-semibold text-[#111827]">Oceanographic Conditions Map</h1>
+              <span className="text-xs font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
                 M04 · P12
               </span>
             </div>
-            <p className="text-xs text-[#4B5563] mt-0.5">
+            <p className="text-sm text-[#4B5563] mt-0.5">
               Real-time spatial layers from INCOIS ERDDAP and Indian Coastal Buoy Network.
             </p>
           </div>
@@ -74,7 +74,7 @@ export default function MarineMapPage() {
           <div className="flex items-center gap-2 text-xs">
             {/* View Mode Toggle */}
             <div className="flex border border-[#E5E7EB] rounded bg-[#FFFFFF] p-0.5">
-              <button
+              <button suppressHydrationWarning
                 onClick={() => setViewMode('map')}
                 className={`px-2.5 py-1 rounded text-xs transition ${
                   viewMode === 'map' ? 'bg-[#111827] text-[#FFFFFF]' : 'text-[#4B5563] hover:text-[#111827]'
@@ -82,7 +82,7 @@ export default function MarineMapPage() {
               >
                 Map View
               </button>
-              <button
+              <button suppressHydrationWarning
                 onClick={() => setViewMode('table')}
                 className={`px-2.5 py-1 rounded text-xs transition ${
                   viewMode === 'table' ? 'bg-[#111827] text-[#FFFFFF]' : 'text-[#4B5563] hover:text-[#111827]'
@@ -96,7 +96,7 @@ export default function MarineMapPage() {
 
         {/* Layer Selector Chips */}
         <div className="flex gap-2 flex-wrap text-xs">
-          <button
+          <button suppressHydrationWarning
             onClick={() => setActiveLayer('sst')}
             className={`px-3 py-1.5 rounded border text-xs font-medium transition ${
               activeLayer === 'sst'
@@ -106,7 +106,7 @@ export default function MarineMapPage() {
           >
             Sea Surface Temp (SST)
           </button>
-          <button
+          <button suppressHydrationWarning
             onClick={() => setActiveLayer('waves')}
             className={`px-3 py-1.5 rounded border text-xs font-medium transition ${
               activeLayer === 'waves'
@@ -116,7 +116,7 @@ export default function MarineMapPage() {
           >
             Wave Height & Direction
           </button>
-          <button
+          <button suppressHydrationWarning
             onClick={() => setActiveLayer('chlorophyll')}
             className={`px-3 py-1.5 rounded border text-xs font-medium transition ${
               activeLayer === 'chlorophyll'
@@ -126,7 +126,7 @@ export default function MarineMapPage() {
           >
             Chlorophyll-a (PFZ Lines)
           </button>
-          <button
+          <button suppressHydrationWarning
             onClick={() => setActiveLayer('cyclone')}
             className={`px-3 py-1.5 rounded border text-xs font-medium transition ${
               activeLayer === 'cyclone'
@@ -182,10 +182,10 @@ export default function MarineMapPage() {
                   <MapPin className="w-3.5 h-3.5 text-[#111827]" />
                   <span>Interactive Coordinate Probe</span>
                 </div>
-                <div className="font-mono text-[11px] text-[#4B5563]">
+                <div className="font-mono text-xs text-[#4B5563]">
                   <span>Lat: {probedCoords.lat}°N · Lon: {probedCoords.lon}°E</span>
                 </div>
-                <div className="font-mono text-[11px] text-[#111827] font-medium">
+                <div className="font-mono text-xs text-[#111827] font-medium">
                   {probedCoords.value}
                 </div>
               </div>
@@ -199,19 +199,19 @@ export default function MarineMapPage() {
             {/* Bottom Overlay: Scientific Color Ramp Legend */}
             <div className="relative z-10 bg-[#FFFFFF] border border-[#E5E7EB] rounded p-3 shadow-sm max-w-sm space-y-2">
               <div className="flex justify-between items-center text-xs">
-                <span className="font-semibold text-[#111827] font-mono text-[11px] uppercase">
+                <span className="font-semibold text-[#111827] font-mono text-xs uppercase">
                   {activeLayer === 'sst' && 'Sea Surface Temp (°C)'}
                   {activeLayer === 'waves' && 'Significant Wave Height (m)'}
                   {activeLayer === 'chlorophyll' && 'Chlorophyll-a (mg/m³)'}
                   {activeLayer === 'cyclone' && 'Wind Speed (knots)'}
                 </span>
-                <span className="text-[10px] text-[#6B7280] font-mono">INCOIS HR-SST</span>
+                <span className="text-xs text-[#6B7280] font-mono">INCOIS HR-SST</span>
               </div>
 
               {/* Monochrome Grayscale / Density Gradient Legend */}
               <div className="h-3 w-full rounded bg-gradient-to-r from-[#E5E7EB] via-[#9CA3AF] to-[#111827]" />
 
-              <div className="flex justify-between text-[10px] font-mono text-[#6B7280]">
+              <div className="flex justify-between text-xs font-mono text-[#6B7280]">
                 <span>26.0 °C</span>
                 <span>28.0 °C</span>
                 <span>30.5 °C</span>
@@ -223,10 +223,10 @@ export default function MarineMapPage() {
           <div className="border border-[#E5E7EB] rounded bg-[#FFFFFF] overflow-hidden">
             <div className="px-4 py-3 border-b border-[#E5E7EB] bg-[#F8F9FA] flex justify-between items-center text-xs">
               <span className="font-semibold text-[#111827]">Saurashtra Coastline In-Situ Buoy Station Telemetry</span>
-              <span className="font-mono text-[#6B7280] text-[11px]">3 reporting stations</span>
+              <span className="font-mono text-[#6B7280] text-xs">3 reporting stations</span>
             </div>
             <table className="w-full text-xs text-left">
-              <thead className="bg-[#FFFFFF] border-b border-[#E5E7EB] text-[#6B7280] font-mono text-[11px]">
+              <thead className="bg-[#FFFFFF] border-b border-[#E5E7EB] text-[#6B7280] font-mono text-xs">
                 <tr>
                   <th className="px-4 py-2.5">Buoy ID</th>
                   <th className="px-4 py-2.5">Location</th>

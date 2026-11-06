@@ -117,7 +117,7 @@ export default function IndependentVerifierPage() {
         <form onSubmit={handleVerify} className="flex gap-2">
           <div className="relative flex-1">
             <Search className="w-4 h-4 absolute left-3 top-2.5 text-[#6B7280]" />
-            <input
+            <input suppressHydrationWarning
               type="text"
               value={inputRef}
               onChange={(e) => setInputRef(e.target.value)}
@@ -125,7 +125,7 @@ export default function IndependentVerifierPage() {
               className="w-full pl-9 pr-3 py-2 text-xs border border-[#E5E7EB] rounded bg-[#FFFFFF] text-[#111827] focus:outline-none focus:border-[#111827] font-mono"
             />
           </div>
-          <button
+          <button suppressHydrationWarning
             type="submit"
             className="px-4 py-2 bg-[#111827] text-[#FFFFFF] text-xs font-medium rounded hover:bg-[#1F2937] transition flex items-center gap-1.5"
           >
@@ -178,7 +178,7 @@ export default function IndependentVerifierPage() {
             </span>
             <div className="p-2.5 bg-[#F8F9FA] border border-[#E5E7EB] rounded font-mono text-[10px] text-[#111827] flex justify-between items-center">
               <span className="truncate">{verificationData.inputManifestDigest}</span>
-              <button
+              <button suppressHydrationWarning
                 onClick={() => copyHash(verificationData.inputManifestDigest)}
                 className="ml-2 text-[#4B5563] hover:text-[#111827]"
               >

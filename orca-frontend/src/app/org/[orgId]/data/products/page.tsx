@@ -96,7 +96,7 @@ export default function MarineProductsPage() {
             </p>
           </div>
 
-          <button
+          <button suppressHydrationWarning
             onClick={fetchProducts}
             className="p-2 border border-[#E5E7EB] rounded hover:bg-[#F8F9FA] text-[#6B7280] hover:text-[#111827]"
             title="Refresh Catalog"
@@ -115,7 +115,7 @@ export default function MarineProductsPage() {
               <AlertCircle className="w-4 h-4 text-[#111827]" />
               <span>Catalog Gateway Error: {error}</span>
             </div>
-            <button
+            <button suppressHydrationWarning
               onClick={fetchProducts}
               className="px-2 py-0.5 border border-[#111827] rounded text-[11px] font-medium hover:bg-[#111827] hover:text-[#FFFFFF] transition"
             >
@@ -128,7 +128,7 @@ export default function MarineProductsPage() {
         <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-[#F8F9FA] p-3 border border-[#E5E7EB] rounded">
           <div className="relative w-full sm:w-80">
             <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-[#6B7280]" />
-            <input
+            <input suppressHydrationWarning
               type="text"
               placeholder="Search by product name or variable..."
               value={search}
@@ -139,7 +139,7 @@ export default function MarineProductsPage() {
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <Filter className="w-3.5 h-3.5 text-[#6B7280]" />
-            <select
+            <select suppressHydrationWarning
               value={kindFilter}
               onChange={(e) => setKindFilter(e.target.value)}
               className="bg-[#FFFFFF] border border-[#E5E7EB] px-2.5 py-1.5 text-xs rounded text-[#111827] focus:outline-none"

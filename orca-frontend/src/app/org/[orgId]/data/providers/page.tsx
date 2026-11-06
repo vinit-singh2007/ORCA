@@ -100,7 +100,7 @@ export default function ProviderCataloguePage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <button suppressHydrationWarning
               onClick={fetchProviders}
               className="p-2 border border-[#E5E7EB] rounded hover:bg-[#F8F9FA] text-[#6B7280] hover:text-[#111827]"
               title="Refresh Providers"
@@ -126,7 +126,7 @@ export default function ProviderCataloguePage() {
               <AlertCircle className="w-4 h-4 text-[#111827]" />
               <span>Provider Gateway Notice: {error}</span>
             </div>
-            <button
+            <button suppressHydrationWarning
               onClick={fetchProviders}
               className="px-2 py-0.5 border border-[#111827] rounded text-xs hover:bg-[#111827] hover:text-[#FFFFFF]"
             >
@@ -139,7 +139,7 @@ export default function ProviderCataloguePage() {
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="w-4 h-4 absolute left-3 top-2.5 text-[#6B7280]" />
-            <input
+            <input suppressHydrationWarning
               type="text"
               placeholder="Search providers by name or description..."
               value={searchQuery}
@@ -150,7 +150,7 @@ export default function ProviderCataloguePage() {
 
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-[#6B7280]" />
-            <select
+            <select suppressHydrationWarning
               value={filterClass}
               onChange={(e) => setFilterClass(e.target.value)}
               className="text-xs border border-[#E5E7EB] rounded px-3 py-2 bg-[#FFFFFF] text-[#111827] focus:outline-none focus:border-[#111827]"

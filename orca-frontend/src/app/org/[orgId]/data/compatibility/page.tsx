@@ -141,7 +141,7 @@ export default function DatasetCompatibilityPage() {
                 <Badge variant="outline">Input</Badge>
               </div>
 
-              <select
+              <select suppressHydrationWarning
                 value={datasetA}
                 onChange={(e) => setDatasetA(e.target.value)}
                 className="w-full p-2 border border-[#E5E7EB] rounded text-xs bg-[#FFFFFF] text-[#111827] focus:outline-none focus:border-[#111827]"
@@ -167,7 +167,7 @@ export default function DatasetCompatibilityPage() {
                 <Badge variant="outline">Baseline</Badge>
               </div>
 
-              <select
+              <select suppressHydrationWarning
                 value={datasetB}
                 onChange={(e) => setDatasetB(e.target.value)}
                 className="w-full p-2 border border-[#E5E7EB] rounded text-xs bg-[#FFFFFF] text-[#111827] focus:outline-none focus:border-[#111827]"
@@ -188,7 +188,7 @@ export default function DatasetCompatibilityPage() {
           <div className="border border-[#E5E7EB] rounded p-4 bg-[#FFFFFF] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <label className="text-xs font-semibold text-[#111827] block">Target Computational Method</label>
-              <select
+              <select suppressHydrationWarning
                 value={targetMethod}
                 onChange={(e) => setTargetMethod(e.target.value)}
                 className="mt-1 p-2 border border-[#E5E7EB] rounded text-xs bg-[#FFFFFF] text-[#111827]"
@@ -198,7 +198,7 @@ export default function DatasetCompatibilityPage() {
               </select>
             </div>
 
-            <button
+            <button suppressHydrationWarning
               type="submit"
               disabled={checking}
               className="px-4 py-2 bg-[#111827] hover:bg-[#1F2937] text-[#FFFFFF] rounded text-xs font-medium transition disabled:opacity-50"

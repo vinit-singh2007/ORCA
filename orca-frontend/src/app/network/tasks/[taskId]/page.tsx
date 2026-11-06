@@ -127,7 +127,7 @@ export default function NetworkTaskDetailPage() {
             <AlertCircle className="w-8 h-8 text-[#111827] mx-auto" />
             <h2 className="text-sm font-semibold text-[#111827]">Task Not Found or Offline</h2>
             <p className="text-xs text-[#4B5563]">{error || 'Task could not be loaded from the backend gateway.'}</p>
-            <button
+            <button suppressHydrationWarning
               onClick={fetchTaskDetails}
               className="px-3 py-1.5 border border-[#111827] text-xs font-medium rounded hover:bg-[#111827] hover:text-[#FFFFFF]"
             >
@@ -221,7 +221,7 @@ export default function NetworkTaskDetailPage() {
                 >
                   <div className="space-y-1">
                     <div className="font-semibold text-sm text-[#111827] flex items-center gap-2">
-                      <input
+                      <input suppressHydrationWarning
                         type="radio"
                         name="claim"
                         checked={selectedClaimId === claim.id}
@@ -248,7 +248,7 @@ export default function NetworkTaskDetailPage() {
             <span className="text-[11px] text-[#6B7280]">
               Assigning provider binds single-award DB constraint in local state (POST /v1/network/tasks/{task.id}/assignments).
             </span>
-            <button
+            <button suppressHydrationWarning
               onClick={handleAssignProvider}
               disabled={assignmentState === 'dispatched' || claims.length === 0}
               className="px-4 py-2 bg-[#111827] text-white text-xs font-medium rounded hover:bg-[#374151] transition disabled:opacity-50 flex items-center gap-1.5"

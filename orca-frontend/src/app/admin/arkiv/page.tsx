@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ORCA 3.0 — O05 Arkiv Indexer Operations Screen
  * 
  * DESIGN SPECIFICATION:
@@ -63,17 +63,17 @@ export default function ArkivIndexerOpsPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#E5E7EB] pb-5">
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-xl font-semibold text-[#111827]">Arkiv On-Chain Indexer & Listener Operations</h1>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
+              <h1 className="text-2xl font-semibold text-[#111827]">Arkiv On-Chain Indexer & Listener Operations</h1>
+              <span className="text-xs font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
                 O05 · P11
               </span>
             </div>
-            <p className="text-xs text-[#4B5563] mt-1">
+            <p className="text-sm text-[#4B5563] mt-1">
               Sepolia blockchain event listener ingestion, entity state decoding, and transaction confirmation watcher.
             </p>
           </div>
 
-          <button
+          <button suppressHydrationWarning
             onClick={handleResync}
             disabled={resyncing}
             className="px-3.5 py-2 text-xs font-medium border border-[#E5E7EB] rounded bg-[#FFFFFF] hover:bg-[#F3F4F6] text-[#111827] flex items-center gap-1.5"
@@ -108,7 +108,7 @@ export default function ArkivIndexerOpsPage() {
         {/* Technical Specification Box */}
         <div className="border border-[#E5E7EB] rounded p-5 bg-[#FFFFFF] space-y-4">
           <div className="flex justify-between items-center border-b border-[#E5E7EB] pb-3">
-            <h2 className="text-xs font-semibold text-[#111827] font-mono uppercase">
+            <h2 className="text-sm font-semibold text-[#111827] font-mono uppercase">
               Arkiv Contract Configuration
             </h2>
             <Badge variant="success">IN SYNCHRONIZATION</Badge>
@@ -116,12 +116,12 @@ export default function ArkivIndexerOpsPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
             <div className="p-3 bg-[#F8F9FA] border border-[#E5E7EB] rounded space-y-1">
-              <span className="text-[#6B7280] block text-[10px] uppercase">Sepolia Registry Contract</span>
-              <span className="text-[#111827] break-all text-[11px]">0x7a3048b291c9...88e40</span>
+              <span className="text-[#6B7280] block text-xs uppercase">Sepolia Registry Contract</span>
+              <span className="text-[#111827] break-all text-xs">0x7a3048b291c9...88e40</span>
             </div>
             <div className="p-3 bg-[#F8F9FA] border border-[#E5E7EB] rounded space-y-1">
-              <span className="text-[#6B7280] block text-[10px] uppercase">Event Polling Cadence</span>
-              <span className="text-[#111827] text-[11px]">WebSocket live feed + 12s polling fallback</span>
+              <span className="text-[#6B7280] block text-xs uppercase">Event Polling Cadence</span>
+              <span className="text-[#111827] text-xs">WebSocket live feed + 12s polling fallback</span>
             </div>
           </div>
 

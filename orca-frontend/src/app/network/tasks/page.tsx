@@ -29,29 +29,16 @@ import { ExternalTask } from '@/types/api';
 
 export default function ArkivTasksPage() {
   const [tasks, setTasks] = useState<ExternalTask[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchTasks = () => {
-    setLoading(true);
-    setError(null);
-    apiClient
-      .listNetworkTasks()
-      .then((res) => {
-        if (res?.items) {
-          setTasks(res.items);
-        }
-        setLoading(false);
-      })
-      .catch((err) => {
-        const apiErr = err as OrcaApiError;
-        setError(apiErr.problem?.detail || 'Unable to fetch network tasks from backend');
-        setLoading(false);
-      });
+    // Disabled auto-polling per handoff §8:
+    // "Do not request /v1/network/tasks or /v1/admin/source-health; they are unavailable."
   };
 
   useEffect(() => {
-    fetchTasks();
+    // Do not auto-request unavailable route on mount
   }, []);
 
   return (
@@ -68,20 +55,20 @@ export default function ArkivTasksPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5E7EB] pb-5">
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-xl font-bold text-[#111827]">
+              <h1 className="text-2xl font-bold text-[#111827]">
                 Research Tasks
               </h1>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
+              <span className="text-xs font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
                 N02 · P11 Protocol
               </span>
             </div>
-            <p className="text-xs text-[#4B5563] mt-1">
+            <p className="text-sm text-[#4B5563] mt-1">
               Decentralized task claims, A2A session dispatching, and independent scientific review coordination on Arkiv Rabdi.
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <button suppressHydrationWarning
               onClick={fetchTasks}
               className="p-2 border border-[#E5E7EB] rounded hover:bg-[#F8F9FA] text-[#6B7280] hover:text-[#111827]"
               title="Refresh Task Board"
@@ -105,6 +92,17 @@ export default function ArkivTasksPage() {
           </div>
         </div>
 
+        {/* Scope Notice per Handoff §8 */}
+        <div className="p-4 border border-[#E5E7EB] bg-[#F8F9FA] rounded text-xs space-y-1 text-[#4B5563]">
+          <div className="font-semibold text-[#111827] flex items-center gap-1.5">
+            <Globe className="w-4 h-4 text-[#111827]" />
+            <span>Scope Notice: Federated A2A Task Board Excluded from Demo Slice</span>
+          </div>
+          <div>
+            The federated A2A agent task board is excluded from the selected research release (handoff §8). Real on-chain Arkiv publication has been performed for the SST research demo and can be inspected via <a href="https://rabdi.explorer.arkiv.network/tx/0x990fe04c31c81d743d79a32e633d0020781be09c5ef82ab50c71881fb976e23d" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#111827] underline">Rabdi Explorer (tx 0x990f...)</a> or in the <Link href="/workspaces" className="font-semibold text-[#111827] underline">Research Demo</Link>.
+          </div>
+        </div>
+
         {/* Backend Error Banner */}
         {error && (
           <div className="p-3 border border-[#E5E7EB] bg-[#F8F9FA] rounded text-xs text-[#4B5563] flex items-center justify-between">
@@ -112,9 +110,9 @@ export default function ArkivTasksPage() {
               <AlertCircle className="w-4 h-4 text-[#111827]" />
               <span>Backend Task Board: {error}</span>
             </div>
-            <button
+            <button suppressHydrationWarning
               onClick={fetchTasks}
-              className="px-2 py-0.5 border border-[#111827] rounded text-[11px] font-medium hover:bg-[#111827] hover:text-[#FFFFFF] transition"
+              className="px-2 py-0.5 border border-[#111827] rounded text-xs font-medium hover:bg-[#111827] hover:text-[#FFFFFF] transition"
             >
               Retry
             </button>
@@ -154,14 +152,14 @@ export default function ArkivTasksPage() {
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-xs font-semibold text-[#111827]">{task.public_id}</span>
                       <StatusIndicator category="arkiv" state={task.chain_state} />
-                      <span className="text-[10px] font-mono text-[#6B7280]">
+                      <span className="text-xs font-mono text-[#6B7280]">
                         Policy: {task.assignment_policy}
                       </span>
                     </div>
-                    <h3 className="text-xs font-semibold text-[#111827]">
+                    <h3 className="text-sm font-semibold text-[#111827]">
                       {task.title}
                     </h3>
-                    <div className="text-[11px] text-[#4B5563] flex items-center gap-3">
+                    <div className="text-xs text-[#4B5563] flex items-center gap-3">
                       <span>Target Capability: <code className="font-mono">{task.required_capability}</code></span>
                       <span>•</span>
                       <span>Deadline: {new Date(task.deadline).toLocaleDateString()}</span>

@@ -120,14 +120,14 @@ export default function MembersSettingsPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <button suppressHydrationWarning
               onClick={loadMembers}
               disabled={loading}
               className="p-1.5 border border-[#E5E7EB] rounded hover:border-[#111827] text-[#111827]"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             </button>
-            <button
+            <button suppressHydrationWarning
               onClick={() => setShowInviteModal(true)}
               className="px-3 py-1.5 text-xs font-medium rounded bg-[#111827] text-[#FFFFFF] hover:bg-[#1F2937] transition flex items-center gap-1.5"
             >
@@ -205,7 +205,7 @@ export default function MembersSettingsPage() {
             <div className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-lg max-w-md w-full p-6 space-y-4 shadow-lg">
               <div className="flex justify-between items-center border-b border-[#E5E7EB] pb-3">
                 <h3 className="text-sm font-semibold text-[#111827]">Grant Organization Access</h3>
-                <button
+                <button suppressHydrationWarning
                   onClick={() => setShowInviteModal(false)}
                   className="text-xs text-[#6B7280] hover:text-[#111827]"
                 >
@@ -216,7 +216,7 @@ export default function MembersSettingsPage() {
               <form onSubmit={handleAddMember} className="space-y-4 text-xs">
                 <div>
                   <label className="block text-[#4B5563] font-medium mb-1">User ID (Principal UUID)</label>
-                  <input
+                  <input suppressHydrationWarning
                     type="text"
                     required
                     placeholder="e.g. usr-9812-4a01..."
@@ -228,7 +228,7 @@ export default function MembersSettingsPage() {
 
                 <div>
                   <label className="block text-[#4B5563] font-medium mb-1">Institutional Role</label>
-                  <select
+                  <select suppressHydrationWarning
                     value={inviteRole}
                     onChange={(e) => setInviteRole(e.target.value as ResearchRole)}
                     className="w-full px-3 py-2 border border-[#E5E7EB] rounded bg-[#FFFFFF] text-xs focus:outline-none focus:border-[#111827]"
@@ -242,14 +242,14 @@ export default function MembersSettingsPage() {
                 </div>
 
                 <div className="pt-2 flex justify-end gap-2">
-                  <button
+                  <button suppressHydrationWarning
                     type="button"
                     onClick={() => setShowInviteModal(false)}
                     className="px-3 py-1.5 border border-[#E5E7EB] rounded text-[#4B5563] hover:text-[#111827]"
                   >
                     Cancel
                   </button>
-                  <button
+                  <button suppressHydrationWarning
                     type="submit"
                     disabled={submitting}
                     className="px-3 py-1.5 bg-[#111827] text-[#FFFFFF] rounded font-medium hover:bg-[#1F2937]"

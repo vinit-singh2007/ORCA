@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ORCA 3.0 — M02 Marine Assistant Conversations Screen
  * 
  * DESIGN SPECIFICATION:
@@ -74,18 +74,18 @@ export default function MarineConversationsPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#E5E7EB] pb-5">
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-xl font-semibold text-[#111827]">Marine Assistant Threads</h1>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
+              <h1 className="text-2xl font-semibold text-[#111827]">Marine Assistant Threads</h1>
+              <span className="text-xs font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
                 M02 · P12
               </span>
             </div>
-            <p className="text-xs text-[#4B5563] mt-1">
+            <p className="text-sm text-[#4B5563] mt-1">
               Conversational inquiry threads for coastal sea state, IMD advisories, and INCOIS potential fishing zones.
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <button suppressHydrationWarning
               onClick={loadConversations}
               disabled={loading}
               className="p-1.5 border border-[#E5E7EB] rounded hover:border-[#111827] text-[#111827]"
@@ -116,7 +116,7 @@ export default function MarineConversationsPage() {
               <AlertCircle className="w-4 h-4" />
               Gateway Notice
             </div>
-            <p className="text-xs text-[#4B5563] font-mono">{error}</p>
+            <p className="text-sm text-[#4B5563] font-mono">{error}</p>
           </div>
         )}
 
@@ -125,7 +125,7 @@ export default function MarineConversationsPage() {
           <div className="p-12 text-center border border-[#E5E7EB] rounded bg-[#FFFFFF] space-y-2">
             <MessageSquare className="w-8 h-8 text-[#9CA3AF] mx-auto" />
             <h3 className="text-sm font-semibold text-[#111827]">No active conversation threads</h3>
-            <p className="text-xs text-[#6B7280]">
+            <p className="text-sm text-[#6B7280]">
               Inquire about coastal advisories or fishing zones on the Marine Map to start a conversation.
             </p>
           </div>
@@ -143,11 +143,11 @@ export default function MarineConversationsPage() {
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-xs text-[#111827]">{thread.title}</span>
                   </div>
-                  <span className="text-[10px] font-mono text-[#6B7280]">
+                  <span className="text-xs font-mono text-[#6B7280]">
                     {thread.last_active_at ? new Date(thread.last_active_at).toLocaleDateString() : 'Recent'}
                   </span>
                 </div>
-                <p className="text-xs text-[#4B5563] line-clamp-2">
+                <p className="text-sm text-[#4B5563] line-clamp-2">
                   {thread.preview || 'No messages yet'}
                 </p>
               </Link>

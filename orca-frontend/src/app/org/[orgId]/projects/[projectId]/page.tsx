@@ -108,7 +108,7 @@ export default function ProjectDetailPage() {
             <AlertCircle className="w-8 h-8 text-[#111827] mx-auto" />
             <h2 className="text-sm font-semibold text-[#111827]">Project Not Found or Access Denied</h2>
             <p className="text-xs text-[#4B5563]">{error || 'Unable to load project.'}</p>
-            <button
+            <button suppressHydrationWarning
               onClick={fetchProjectData}
               className="px-3 py-1.5 border border-[#111827] text-xs font-medium rounded hover:bg-[#111827] hover:text-[#FFFFFF]"
             >
@@ -162,7 +162,7 @@ export default function ProjectDetailPage() {
 
           {/* Contextual Tabs Navigation */}
           <div className="flex items-center gap-2 border-t border-[#E5E7EB] pt-4 text-xs font-medium">
-            <button
+            <button suppressHydrationWarning
               onClick={() => setActiveTab('overview')}
               className={`px-3 py-1.5 rounded transition ${
                 activeTab === 'overview'
@@ -172,7 +172,7 @@ export default function ProjectDetailPage() {
             >
               Overview
             </button>
-            <button
+            <button suppressHydrationWarning
               onClick={() => setActiveTab('investigations')}
               className={`px-3 py-1.5 rounded transition ${
                 activeTab === 'investigations'
@@ -188,7 +188,7 @@ export default function ProjectDetailPage() {
             >
               Files & Uploads
             </Link>
-            <button
+            <button suppressHydrationWarning
               onClick={() => setActiveTab('members')}
               className={`px-3 py-1.5 rounded transition ${
                 activeTab === 'members'
@@ -220,7 +220,7 @@ export default function ProjectDetailPage() {
                 {investigations.length} bounded scientific investigations formulated within this project scope.
               </p>
               <div className="pt-2">
-                <button
+                <button suppressHydrationWarning
                   onClick={() => setActiveTab('investigations')}
                   className="font-medium text-[#111827] hover:underline"
                 >

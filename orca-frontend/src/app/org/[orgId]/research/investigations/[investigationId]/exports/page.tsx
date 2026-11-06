@@ -165,7 +165,7 @@ export default function ReproducibleExportPage() {
             </p>
           </div>
 
-          <button
+          <button suppressHydrationWarning
             onClick={handleDownload}
             disabled={downloading}
             className="px-3.5 py-2 text-xs font-medium rounded bg-[#111827] text-[#FFFFFF] hover:bg-[#1F2937] transition flex items-center gap-1.5"
@@ -228,7 +228,7 @@ export default function ReproducibleExportPage() {
                 Terminal One-Liner (Independent Reproduction)
               </span>
             </div>
-            <button
+            <button suppressHydrationWarning
               onClick={copySnippet}
               className="text-xs text-[#4B5563] hover:text-[#111827] flex items-center gap-1"
             >

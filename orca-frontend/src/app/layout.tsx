@@ -1,5 +1,5 @@
 /**
- * ORCA 3.0 — Root Application Layout
+ * ORCA — Root Application Layout
  * 
  * Provides base HTML scaffolding, strict typography tokens, and global CSS imports.
  * Sourced from dashboard design.md §2 (Visual language: strict white / neutral only).
@@ -9,9 +9,10 @@
 
 import type { Metadata } from 'next';
 import './globals.css';
+import { AppProviders } from '@/components/providers/AppProviders';
 
 export const metadata: Metadata = {
-  title: 'ORCA 3.0 — Institutional Marine Science & Verification Workspace',
+  title: 'ORCA — Institutional Marine Science & Verification Workspace',
   description: 'Verified oceanographic calculations, reproducible investigations, and decentralized A2A agent coordination.',
 };
 
@@ -21,9 +22,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="h-full bg-[#FFFFFF]">
-      <body className="min-h-full bg-[#FFFFFF] text-[#111827] font-sans antialiased">
-        {children}
+    <html lang="en" className="h-full bg-[#FFFFFF]" suppressHydrationWarning>
+      <body className="min-h-full bg-[#FFFFFF] text-[#111827] font-sans antialiased" suppressHydrationWarning>
+        <AppProviders>
+          {children}
+        </AppProviders>
       </body>
     </html>
   );

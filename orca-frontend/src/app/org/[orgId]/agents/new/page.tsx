@@ -202,7 +202,7 @@ export default function AgentOnboardingWizard() {
                   >
                     <div className="flex items-center justify-between mb-1">
                       <div className="font-semibold text-sm text-[#111827] flex items-center gap-2">
-                        <input
+                        <input suppressHydrationWarning
                           type="radio"
                           name="mode"
                           checked={providerMode === item.mode}
@@ -219,7 +219,7 @@ export default function AgentOnboardingWizard() {
               </div>
 
               <div className="pt-4 border-t border-[#E5E7EB] flex justify-end">
-                <button
+                <button suppressHydrationWarning
                   type="button"
                   onClick={() => setCurrentStep(2)}
                   className="px-4 py-2 bg-[#111827] text-white rounded font-medium hover:bg-[#374151] flex items-center gap-1.5"
@@ -248,7 +248,7 @@ export default function AgentOnboardingWizard() {
                   <label className="block font-semibold text-[#111827] mb-1">
                     Agent Display Name *
                   </label>
-                  <input
+                  <input suppressHydrationWarning
                     type="text"
                     required
                     value={agentName}
@@ -262,7 +262,7 @@ export default function AgentOnboardingWizard() {
                   <label className="block font-semibold text-[#111827] mb-1">
                     System Identifier / URL Slug *
                   </label>
-                  <input
+                  <input suppressHydrationWarning
                     type="text"
                     required
                     value={agentSlug}
@@ -275,7 +275,7 @@ export default function AgentOnboardingWizard() {
                   <label className="block font-semibold text-[#111827] mb-1">
                     Visibility Policy
                   </label>
-                  <select
+                  <select suppressHydrationWarning
                     value={visibility}
                     onChange={(e) => setVisibility(e.target.value as any)}
                     className="w-full border border-[#E5E7EB] p-2 rounded focus:outline-none focus:border-[#111827]"
@@ -287,14 +287,14 @@ export default function AgentOnboardingWizard() {
               </div>
 
               <div className="pt-4 border-t border-[#E5E7EB] flex justify-between">
-                <button
+                <button suppressHydrationWarning
                   type="button"
                   onClick={() => setCurrentStep(1)}
                   className="px-3 py-1.5 border border-[#E5E7EB] rounded hover:text-[#111827]"
                 >
                   ← Back
                 </button>
-                <button
+                <button suppressHydrationWarning
                   type="button"
                   onClick={() => setCurrentStep(3)}
                   className="px-4 py-2 bg-[#111827] text-white rounded font-medium hover:bg-[#374151] flex items-center gap-1.5"
@@ -362,7 +362,7 @@ export default function AgentOnboardingWizard() {
                     >
                       <div className="flex items-center justify-between">
                         <div className="font-semibold text-[#111827] flex items-center gap-2">
-                          <input
+                          <input suppressHydrationWarning
                             type="checkbox"
                             checked={isChecked}
                             onChange={() => {}}
@@ -381,14 +381,14 @@ export default function AgentOnboardingWizard() {
               </div>
 
               <div className="pt-4 border-t border-[#E5E7EB] flex justify-between">
-                <button
+                <button suppressHydrationWarning
                   type="button"
                   onClick={() => setCurrentStep(2)}
                   className="px-3 py-1.5 border border-[#E5E7EB] rounded hover:text-[#111827]"
                 >
                   ← Back
                 </button>
-                <button
+                <button suppressHydrationWarning
                   type="button"
                   onClick={() => setCurrentStep(4)}
                   className="px-4 py-2 bg-[#111827] text-white rounded font-medium hover:bg-[#374151] flex items-center gap-1.5"
@@ -417,7 +417,7 @@ export default function AgentOnboardingWizard() {
                   <label className="block font-semibold text-[#111827] mb-1">
                     A2A Service Endpoint URL (HTTPS Only) *
                   </label>
-                  <input
+                  <input suppressHydrationWarning
                     type="url"
                     required
                     value={endpointUri}
@@ -433,7 +433,7 @@ export default function AgentOnboardingWizard() {
                   <label className="block font-semibold text-[#111827] mb-1">
                     A2A Agent Card URL (.well-known/agent-card.json) *
                   </label>
-                  <input
+                  <input suppressHydrationWarning
                     type="url"
                     required
                     value={cardUrl}
@@ -446,7 +446,7 @@ export default function AgentOnboardingWizard() {
                   <label className="block font-semibold text-[#111827] mb-1">
                     Authentication Transport Scheme
                   </label>
-                  <select
+                  <select suppressHydrationWarning
                     value={authScheme}
                     onChange={(e) => setAuthScheme(e.target.value as any)}
                     className="w-full border border-[#E5E7EB] p-2 rounded focus:outline-none focus:border-[#111827]"
@@ -466,7 +466,7 @@ export default function AgentOnboardingWizard() {
                         Sends <code>POST /v1/network/agents/{'{id}'}/endpoint-checks</code> to test Agent Card JSON-LD compatibility.
                       </div>
                     </div>
-                    <button
+                    <button suppressHydrationWarning
                       type="button"
                       onClick={handleProbeEndpoint}
                       disabled={probeStatus === 'probing'}
@@ -487,14 +487,14 @@ export default function AgentOnboardingWizard() {
               </div>
 
               <div className="pt-4 border-t border-[#E5E7EB] flex justify-between">
-                <button
+                <button suppressHydrationWarning
                   type="button"
                   onClick={() => setCurrentStep(3)}
                   className="px-3 py-1.5 border border-[#E5E7EB] rounded hover:text-[#111827]"
                 >
                   ← Back
                 </button>
-                <button
+                <button suppressHydrationWarning
                   type="button"
                   onClick={() => setCurrentStep(5)}
                   className="px-4 py-2 bg-[#111827] text-white rounded font-medium hover:bg-[#374151] flex items-center gap-1.5"
@@ -551,14 +551,14 @@ export default function AgentOnboardingWizard() {
               </div>
 
               <div className="pt-4 border-t border-[#E5E7EB] flex justify-between">
-                <button
+                <button suppressHydrationWarning
                   type="button"
                   onClick={() => setCurrentStep(4)}
                   className="px-3 py-1.5 border border-[#E5E7EB] rounded hover:text-[#111827]"
                 >
                   ← Back
                 </button>
-                <button
+                <button suppressHydrationWarning
                   type="submit"
                   className="px-5 py-2 bg-[#111827] text-white rounded font-medium hover:bg-[#374151]"
                 >

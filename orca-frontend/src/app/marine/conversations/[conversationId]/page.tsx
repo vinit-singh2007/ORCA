@@ -126,7 +126,7 @@ export default function ConversationStreamPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <button suppressHydrationWarning
               onClick={loadConversation}
               disabled={loading}
               className="p-1 border border-[#E5E7EB] rounded hover:border-[#111827] text-[#111827]"
@@ -196,7 +196,7 @@ export default function ConversationStreamPage() {
 
         {/* Input Bar */}
         <form onSubmit={handleSendMessage} className="flex gap-2">
-          <input
+          <input suppressHydrationWarning
             type="text"
             placeholder="Inquire about sea state, wind conditions, or hazard bulletins..."
             value={inputText}
@@ -204,7 +204,7 @@ export default function ConversationStreamPage() {
             disabled={sending}
             className="flex-1 px-3 py-2 text-xs border border-[#E5E7EB] rounded bg-[#FFFFFF] focus:outline-none focus:border-[#111827]"
           />
-          <button
+          <button suppressHydrationWarning
             type="submit"
             disabled={sending || !inputText.trim()}
             className="px-4 py-2 bg-[#111827] text-[#FFFFFF] rounded text-xs font-medium hover:bg-[#1F2937] transition flex items-center gap-1.5 disabled:opacity-50"

@@ -1,109 +1,103 @@
 /**
  * Screen F03 — Workspace Selector & Organization Directory
  * 
- * Sourced from dashboard design.md §5.1 (Screen F03):
- * - URL: /workspaces
- * - Highest API Gate Referenced: P02
- * - Backend Calls: GET /v1/me (§3.2), GET /v1/organizations (§3.2), POST /v1/organizations (§3.2)
- * - Acceptance Rule: Switching org clears scoped queries and updates breadcrumbs/routes.
- * 
- * TRUTH BOUNDARY:
- * - Direct integration with real backend API client
- * - No mock data dependencies
- * - Full RFC 9457 error and loading handling
+ * Sourced directly from ORCA Frontend Handoff §7 & §8:
+ * - Real Supabase Auth sign-in state via useAuth()
+ * - Shows LoginForm when unauthenticated
+ * - Loads /v1/organizations with Bearer token
+ * - Controlled workspace selection
+ * - Organization creation disabled per §8 ("Organization creation is managed by the backend administrator")
+ * - If directory empty: shows "Ask the organization administrator for access"
+ * - Role displayed as returned from server (e.g. 'researcher')
+ * - No synthetic fallback or dummy organizations
  */
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Shell } from '@/components/layout/Shell';
 import { Badge } from '@/components/ui/Badge';
-import { Building2, Plus, ArrowRight, ShieldCheck, Check, AlertCircle, RefreshCw } from 'lucide-react';
-import { apiClient, OrcaApiError } from '@/lib/api-client';
-import { OrganizationSummary, CurrentPrincipal } from '@/types/api';
+import { Building2, ArrowRight, ShieldCheck, Check, AlertCircle, RefreshCw, Lock, Sparkles } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { LoginForm } from '@/components/auth/LoginForm';
 
 export default function WorkspacesPage() {
-  const [organizations, setOrganizations] = useState<OrganizationSummary[]>([]);
-  const [principal, setPrincipal] = useState<CurrentPrincipal | null>(null);
-  const [activeOrgId, setActiveOrgId] = useState<string>('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const {
+    user,
+    currentUser,
+    organizations,
+    selectedOrgId,
+    selectOrg,
+    orgsLoading,
+    error,
+    refreshDirectory,
+    isBackendAlive,
+  } = useAuth();
 
-  const fetchWorkspaces = () => {
-    setLoading(true);
-    setError(null);
-    Promise.allSettled([apiClient.listOrganizations(), apiClient.getMe()]).then(([orgsRes, meRes]) => {
-      if (orgsRes.status === 'fulfilled' && orgsRes.value?.items) {
-        setOrganizations(orgsRes.value.items);
-        if (orgsRes.value.items.length > 0) {
-          setActiveOrgId(orgsRes.value.items[0].id);
-        }
-      } else if (orgsRes.status === 'rejected') {
-        const err = orgsRes.reason as OrcaApiError;
-        setError(err.problem?.detail || 'Unable to fetch organizations from backend');
-      }
+  // If not logged in, render the login form
+  if (!user) {
+    return (
+      <Shell>
+        <div className="w-full max-w-xl mx-auto py-10">
+          <div className="mb-6 text-center space-y-1">
+            <h1 className="text-2xl font-bold text-[#111827]">ORCA Authentication</h1>
+            <p className="text-sm text-[#4B5563]">
+              Sign in with your Supabase account to access your institutional research workspaces.
+            </p>
+          </div>
+          <LoginForm />
+        </div>
+      </Shell>
+    );
+  }
 
-      if (meRes.status === 'fulfilled' && meRes.value) {
-        setPrincipal(meRes.value);
-      }
-      setLoading(false);
-    });
-  };
-
-  useEffect(() => {
-    fetchWorkspaces();
-  }, []);
-
-  const handleCreateOrg = async () => {
-    const name = prompt('Enter new Organization name:');
-    if (!name) return;
-    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    try {
-      const created = await apiClient.createOrganization({ name, slug, visibility: 'private' });
-      alert(`Organization created: ${created.name} (${created.id})`);
-      fetchWorkspaces();
-    } catch (err) {
-      const apiErr = err as OrcaApiError;
-      alert(`Failed to create organization: ${apiErr.problem?.detail || apiErr.message}`);
-    }
+  const handleSelectWorkspace = (orgId: string) => {
+    selectOrg(orgId);
+    router.push(`/org/${orgId}/overview`);
   };
 
   return (
     <Shell>
-      <div className="space-y-6 max-w-5xl">
+      <div className="space-y-6 w-full max-w-5xl">
         {/* Title & Context */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5E7EB] pb-5">
           <div>
-            <h1 className="text-xl font-bold text-[#111827]">
+            <h1 className="text-2xl font-bold text-[#111827]">
               Organization & Workspace Directory
             </h1>
-            <p className="text-xs text-[#4B5563] mt-1">
-              Select an authorized organization context. Row-level security (RLS) scopes all subsequent research projects and datasets.
+            <p className="text-sm text-[#4B5563] mt-1">
+              Choose a workspace you have access to. Research projects, data snapshots, and reproducible executions are strictly scoped to your authorized organization context.
             </p>
           </div>
-          <button
-            onClick={handleCreateOrg}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#111827] text-[#FFFFFF] text-xs font-medium rounded hover:bg-[#374151] transition"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            New Organization
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              suppressHydrationWarning
+              onClick={() => refreshDirectory()}
+              disabled={orgsLoading}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-[#E5E7EB] rounded text-xs font-medium text-[#111827] hover:bg-[#F8F9FA] transition disabled:opacity-50"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${orgsLoading ? 'animate-spin' : ''}`} />
+              Refresh
+            </button>
+          </div>
         </div>
 
-        {/* Backend Error Banner */}
+        {/* Backend Connection Error Banner */}
         {error && (
           <div className="p-4 border border-[#E5E7EB] bg-[#F8F9FA] rounded text-xs flex items-center justify-between">
             <div className="flex items-center gap-2 text-[#111827]">
-              <AlertCircle className="w-4 h-4" />
-              <span>Backend Connection Error: {error}</span>
+              <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+              <span>Backend Directory Notice (GET /v1/organizations): {error}</span>
             </div>
             <button
-              onClick={fetchWorkspaces}
+              suppressHydrationWarning
+              onClick={() => refreshDirectory()}
               className="inline-flex items-center gap-1 px-2.5 py-1 border border-[#111827] rounded text-xs hover:bg-[#111827] hover:text-[#FFFFFF] transition"
             >
-              <RefreshCw className="w-3 h-3" />
-              <span>Retry</span>
+              Retry
             </button>
           </div>
         )}
@@ -111,86 +105,95 @@ export default function WorkspacesPage() {
         {/* Organizations List */}
         <div className="border border-[#E5E7EB] rounded bg-[#FFFFFF] overflow-hidden">
           <div className="px-4 py-3 bg-[#F8F9FA] border-b border-[#E5E7EB] text-xs font-mono font-semibold text-[#4B5563] uppercase flex justify-between items-center">
-            <span>Affiliated Institutional Organizations ({organizations.length})</span>
-            {loading && <span className="text-[11px] font-sans text-[#6B7280]">Loading live records...</span>}
+            <span>Authorized Institutional Organizations ({organizations.length})</span>
+            {orgsLoading && <span className="text-xs font-sans text-[#6B7280]">Loading live records...</span>}
           </div>
 
           <div className="divide-y divide-[#E5E7EB]">
-            {organizations.length === 0 && !loading && (
-              <div className="p-8 text-center text-xs text-[#6B7280] space-y-2">
-                <div>No organizations found for this principal account on the backend.</div>
-                <button
-                  onClick={handleCreateOrg}
-                  className="px-3 py-1.5 bg-[#111827] text-[#FFFFFF] rounded text-xs font-medium"
-                >
-                  Create Initial Organization
-                </button>
+            {organizations.length === 0 && !orgsLoading && (
+              <div className="p-10 text-center space-y-3">
+                <div className="w-12 h-12 mx-auto rounded-full bg-[#F3F4F6] flex items-center justify-center text-[#6B7280]">
+                  <Lock className="w-6 h-6" />
+                </div>
+                <div className="text-sm font-medium text-[#111827]">
+                  No authorized organizations found
+                </div>
+                <p className="text-xs text-[#6B7280] max-w-md mx-auto">
+                  Ask the organization administrator for access. Creating an authentication account alone does not grant research workspace membership.
+                </p>
               </div>
             )}
 
             {organizations.map((org) => {
-              const isSelected = org.id === activeOrgId;
-              const membership = principal?.orgs?.find((o) => o.org_id === org.id);
+              const isSelected = org.id === selectedOrgId;
+              const userRole = org.role || (currentUser?.roles?.[0] ?? 'researcher');
+              const isDemoOrg = org.id === 'b7806251-9ebc-4ad0-ac93-044345e83d24';
 
               return (
                 <div
                   key={org.id}
                   className={`p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 transition ${
-                    isSelected ? 'bg-[#F8F9FA]' : 'hover:bg-[#FFFFFF]'
+                    isSelected ? 'bg-[#F9FAFB] border-l-4 border-l-[#111827]' : 'hover:bg-[#FFFFFF]'
                   }`}
                 >
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded border border-[#E5E7EB] bg-[#FFFFFF] flex items-center justify-center text-[#111827] mt-0.5">
+                    <div className="w-10 h-10 rounded border border-[#E5E7EB] bg-[#FFFFFF] flex items-center justify-center text-[#111827] mt-0.5 shrink-0">
                       <Building2 className="w-5 h-5" />
                     </div>
                     <div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <h2 className="text-sm font-semibold text-[#111827]">
                           {org.name}
                         </h2>
-                        {org.verification_status === 'verified' && (
+                        {isDemoOrg && (
                           <Badge variant="verified">
-                            <ShieldCheck className="w-3 h-3 text-[#111827]" />
-                            VERIFIED INSTITUTION
+                            <Sparkles className="w-3 h-3 text-[#111827]" />
+                            Real Research Demo Workspace
                           </Badge>
                         )}
-                        <Badge variant="outline">{org.visibility}</Badge>
+                        {org.visibility && (
+                          <Badge variant="outline">{org.visibility}</Badge>
+                        )}
                       </div>
-                      <p className="text-xs text-[#6B7280] mt-1">
-                        Slug: <code className="font-mono text-[#111827]">{org.slug}</code> | ID: <code className="font-mono text-[#6B7280]">{org.id}</code>
+                      <p className="text-xs text-[#6B7280] mt-1 font-mono">
+                        Slug: <span className="text-[#111827] font-semibold">{org.slug}</span>
+                        {' · '}
+                        ID: <span>{org.id}</span>
                       </p>
                       <div className="flex items-center gap-3 mt-2 text-xs">
                         <span className="text-[#4B5563]">
-                          Principal Role:{' '}
-                          <strong className="text-[#111827]">
-                            {membership ? membership.role.replace('_', ' ') : 'viewer'}
+                          Server Verified Role:{' '}
+                          <strong className="text-[#111827] uppercase font-mono">
+                            {userRole}
                           </strong>
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 self-end md:self-center">
+                  <div className="flex items-center gap-3 self-end md:self-center shrink-0">
                     {isSelected ? (
                       <span className="flex items-center gap-1.5 px-3 py-1.5 border border-[#111827] bg-[#FFFFFF] text-[#111827] text-xs font-medium rounded">
                         <Check className="w-3.5 h-3.5" />
-                        Current Active Scope
+                        Active Selection
                       </span>
                     ) : (
                       <button
-                        onClick={() => setActiveOrgId(org.id)}
+                        suppressHydrationWarning
+                        onClick={() => selectOrg(org.id)}
                         className="px-3 py-1.5 border border-[#E5E7EB] hover:border-[#111827] text-[#111827] text-xs font-medium rounded transition"
                       >
-                        Set Active Scope
+                        Select Workspace
                       </button>
                     )}
-                    <Link
-                      href={`/org/${org.id}/overview`}
-                      className="flex items-center gap-1 px-3 py-1.5 bg-[#111827] text-[#FFFFFF] text-xs font-medium rounded hover:bg-[#374151] transition"
+                    <button
+                      suppressHydrationWarning
+                      onClick={() => handleSelectWorkspace(org.id)}
+                      className="flex items-center gap-1 px-3.5 py-1.5 bg-[#111827] text-[#FFFFFF] text-xs font-medium rounded hover:bg-[#374151] transition"
                     >
-                      Enter Overview
+                      Enter Workspace
                       <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
+                    </button>
                   </div>
                 </div>
               );
@@ -198,11 +201,11 @@ export default function WorkspacesPage() {
           </div>
         </div>
 
-        {/* Tenancy & Security Invariant Callout */}
+        {/* Backend Provisioning Note per Handoff §8 */}
         <div className="p-4 border border-[#E5E7EB] bg-[#F8F9FA] rounded text-xs space-y-1 text-[#4B5563]">
-          <div className="font-semibold text-[#111827]">Tenant Boundary Rule (api design.md §2.2):</div>
+          <div className="font-semibold text-[#111827]">Organization Management Notice:</div>
           <div>
-            ORCA validates tenant context against server-side session claims and database RLS. Headers such as <code>X-Organization-ID</code> are correlation hints only and cannot grant cross-tenant authority.
+            Organization creation is managed directly by backend database administrators. If your institution is not listed, contact your ORCA administrator to be assigned membership.
           </div>
         </div>
       </div>

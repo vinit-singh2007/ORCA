@@ -30,6 +30,7 @@ import {
   Server,
   Layers,
   Settings,
+  Sparkles,
   Users,
   ShieldAlert,
   ChevronRight,
@@ -89,6 +90,7 @@ export function Sidebar() {
         {isInstitution && (
           <div className="space-y-1">
             {navItem(orgId ? `/org/${orgId}/overview` : '/workspaces', 'Overview', <Activity className="w-4 h-4" />)}
+            {navItem(orgId ? `/org/${orgId}/research/demo` : '/workspaces', 'Research Demo', <Sparkles className="w-4 h-4 text-[#111827]" />)}
             {navItem(orgId ? `/org/${orgId}/projects` : '/workspaces', 'Projects', <FolderKanban className="w-4 h-4" />)}
             {navItem(orgId ? `/org/${orgId}/research/investigations` : '/workspaces', 'Investigations', <FileSearch className="w-4 h-4" />)}
             {navItem(orgId ? `/org/${orgId}/data/products` : '/workspaces', 'Data & Methods', <Database className="w-4 h-4" />)}
@@ -116,7 +118,7 @@ export function Sidebar() {
             {/* Contextual Marine Tools */}
             {!isCollapsed && (
               <div className="pt-3 mt-2 border-t border-[#E5E7EB] space-y-1">
-                <div className="px-3 pb-1 text-[10px] font-mono uppercase text-[#6B7280]">Tools</div>
+                <div className="px-3 pb-1 text-xs font-mono uppercase text-[#6B7280]">Tools</div>
                 {navItem('/marine/fisheries', 'Fisheries & PFZ', <Fish className="w-4 h-4" />)}
                 {navItem('/marine/routes', 'Route Analysis', <Navigation className="w-4 h-4" />)}
               </div>
@@ -141,6 +143,8 @@ export function Sidebar() {
         {isInstitution && !isCollapsed && (
           <div className="space-y-1">
             <button
+              type="button"
+              suppressHydrationWarning
               onClick={() => setShowSettings(!showSettings)}
               className="w-full flex items-center justify-between px-3 py-1.5 text-xs text-[#4B5563] hover:text-[#111827] rounded hover:bg-[#F8F9FA] transition"
             >
@@ -192,8 +196,8 @@ export function Sidebar() {
 
         {/* Advanced Links for Network Mode */}
         {isNetwork && !isCollapsed && (
-          <div className="space-y-0.5 text-[11px] text-[#6B7280]">
-            <div className="px-3 pb-0.5 font-mono uppercase text-[9px] text-[#9CA3AF]">Advanced</div>
+          <div className="space-y-0.5 text-xs text-[#6B7280]">
+            <div className="px-3 pb-0.5 font-mono uppercase text-xs text-[#9CA3AF]">Advanced</div>
             <Link
               href="/network/arkiv"
               className={`block px-3 py-1 hover:text-[#111827] rounded hover:bg-[#F8F9FA] ${
@@ -213,6 +217,8 @@ export function Sidebar() {
 
         {/* Collapse / Expand Toggle Button */}
         <button
+          type="button"
+          suppressHydrationWarning
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="w-full flex items-center justify-center p-2 text-xs text-[#6B7280] hover:text-[#111827] hover:bg-[#F8F9FA] rounded transition"
           title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}

@@ -1,98 +1,69 @@
 /**
- * ORCA 3.0 — Mode-Aware Global Header
+ * ORCA — Mode-Aware Global Header
  * 
- * Sourced from ORCA_3_0_Navigation_and_Dashboard_Redesign_Guidelines.md §3.1:
- * - One thin top bar (52-56px), fixed within page shell
- * - Workspace switcher: Institution | Network | Marine | Platform Ops (role-gated)
- * - Universal search input (⌘K / Ctrl+K)
- * - Active Organization Switcher with live API integration
- * - Profile & tenant context from GET /v1/me and GET /v1/organizations
- * 
- * TRUTH BOUNDARY & API CONTRACT:
- * - Direct integration with apiClient.getMe() (§3.2) and apiClient.listOrganizations() (§3.2)
- * - No mock data dependencies
- * - Clean, quiet monochrome tokens (#FFFFFF, #E5E7EB, #111827)
+ * Sourced directly from ORCA Frontend Handoff §7 & §8:
+ * - Real Supabase session identity and server-returned membership role (e.g. "researcher")
+ * - Connected to authorized organization directory from GET /v1/organizations
+ * - Real sign-out via supabase.auth.signOut()
+ * - Clean visual tokens adhering to white-neutral design guidelines
  */
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Building2,
   Network,
   Compass,
-  Search,
-  ChevronDown,
   Radio,
+  ChevronDown,
+  LogOut,
+  LogIn,
   User,
+  Shield,
 } from 'lucide-react';
-import { apiClient } from '@/lib/api-client';
-import { OrganizationSummary, CurrentPrincipal } from '@/types/api';
+import { useAuth } from '@/context/AuthContext';
 
 export function Header() {
   const pathname = usePathname() || '';
   const router = useRouter();
 
-  const [organizations, setOrganizations] = useState<OrganizationSummary[]>([]);
-  const [principal, setPrincipal] = useState<CurrentPrincipal | null>(null);
+  const {
+    user,
+    currentUser,
+    organizations,
+    selectedOrg,
+    selectOrg,
+    signOut,
+  } = useAuth();
+
   const [showOrgDropdown, setShowOrgDropdown] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
 
   // Extract orgId from URL pathname if inside /org/:orgId
   const orgMatch = pathname.match(/\/org\/([^/]+)/);
   const currentPathOrgId = orgMatch ? orgMatch[1] : null;
 
-  useEffect(() => {
-    let isMounted = true;
-
-    // Fetch live principal from API (GET /v1/me)
-    apiClient
-      .getMe()
-      .then((p) => {
-        if (isMounted) setPrincipal(p);
-      })
-      .catch(() => {
-        // Fallback for unauthenticated / developing session
-      });
-
-    // Fetch permitted organizations from API (GET /v1/organizations)
-    apiClient
-      .listOrganizations()
-      .then((res) => {
-        if (isMounted && res?.items) {
-          setOrganizations(res.items);
-        }
-      })
-      .catch(() => {
-        // Offline or connection pending
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  // Determine active organization
   const activeOrg =
+    selectedOrg ||
     organizations.find((o) => o.id === currentPathOrgId) ||
     organizations[0] ||
-    (currentPathOrgId
-      ? {
-          id: currentPathOrgId,
-          name: 'Current Workspace',
-          slug: 'workspace',
-          visibility: 'public' as const,
-          verification_status: 'verified' as const,
-        }
-      : null);
+    null;
 
   // Determine current active workspace mode strictly from route
   const isMarine = pathname.startsWith('/marine');
   const isOps = pathname.startsWith('/admin');
   const isNetwork = pathname.startsWith('/network') || pathname.includes('/agents');
   const isInstitution = !isMarine && !isOps && !isNetwork;
+
+  // Derive verified role per handoff §7
+  const displayRole = currentUser?.roles?.[0]
+    ? currentUser.roles[0].replace(/_/g, ' ')
+    : user
+    ? 'Researcher'
+    : 'Guest';
 
   return (
     <header className="h-14 bg-[#FFFFFF] border-b border-[#E5E7EB] px-4 flex items-center justify-between sticky top-0 z-50">
@@ -118,7 +89,7 @@ export function Header() {
           </Link>
 
           <Link
-            href="/network/tasks"
+            href="/network/agents"
             className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded transition ${
               isNetwork
                 ? 'bg-[#F3F4F6] text-[#111827] font-semibold'
@@ -141,7 +112,6 @@ export function Header() {
             <span>Marine</span>
           </Link>
 
-          {/* Platform Ops — Shown only to authorized operators */}
           <Link
             href="/admin/system"
             className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded transition ${
@@ -156,24 +126,8 @@ export function Header() {
         </nav>
       </div>
 
-      {/* Center/Right: Universal Search & Organization Selector */}
+      {/* Right: Workspace Selector & Real Identity */}
       <div className="flex items-center gap-3">
-        {/* Universal Search (⌘K / Ctrl+K) */}
-        <div className="relative hidden sm:block w-48 lg:w-64">
-          <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#6B7280] pointer-events-none" />
-          <button
-            type="button"
-            suppressHydrationWarning
-            onClick={() => setSearchOpen(true)}
-            className="w-full pl-8 pr-3 py-1.5 text-xs text-left border border-[#E5E7EB] rounded bg-[#F8F9FA] text-[#6B7280] hover:bg-[#FFFFFF] hover:border-[#111827] transition flex items-center justify-between"
-          >
-            <span className="truncate">Search projects, tasks...</span>
-            <kbd className="hidden lg:inline-block font-mono text-[10px] bg-[#FFFFFF] border border-[#E5E7EB] px-1.5 py-0.2 rounded text-[#6B7280]">
-              ⌘K
-            </kbd>
-          </button>
-        </div>
-
         {/* Organization Switcher Dropdown */}
         <div className="relative">
           <button
@@ -182,21 +136,25 @@ export function Header() {
             onClick={() => setShowOrgDropdown(!showOrgDropdown)}
             className="flex items-center gap-2 px-2.5 py-1.5 border border-[#E5E7EB] hover:border-[#111827] bg-[#FFFFFF] rounded text-xs transition"
           >
-            <span className="w-2 h-2 rounded-full bg-[#111827]" />
-            <span className="font-medium text-[#111827] max-w-[130px] truncate">{activeOrg?.name || 'Workspaces'}</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-600" />
+            <span className="font-medium text-[#111827] max-w-[140px] truncate">
+              {activeOrg?.name || 'Select Workspace'}
+            </span>
             <ChevronDown className="w-3 h-3 text-[#6B7280]" />
           </button>
 
           {showOrgDropdown && (
-            <div className="absolute right-0 mt-1 w-64 bg-[#FFFFFF] border border-[#E5E7EB] rounded shadow-sm py-1 z-50 text-xs">
-              <div className="px-3 py-1.5 text-[10px] font-mono text-[#6B7280] uppercase tracking-wider border-b border-[#E5E7EB]">
-                Switch Organization
+            <div className="absolute right-0 mt-1 w-64 bg-[#FFFFFF] border border-[#E5E7EB] rounded-lg shadow-lg py-1 z-50 text-xs">
+              <div className="px-3 py-1.5 text-xs font-mono text-[#6B7280] uppercase tracking-wider border-b border-[#E5E7EB]">
+                Authorized Workspaces ({organizations.length})
               </div>
               {organizations.length > 0 ? (
                 organizations.map((org) => (
                   <button
                     key={org.id}
+                    suppressHydrationWarning
                     onClick={() => {
+                      selectOrg(org.id);
                       setShowOrgDropdown(false);
                       router.push(`/org/${org.id}/overview`);
                     }}
@@ -205,12 +163,14 @@ export function Header() {
                     }`}
                   >
                     <span className="truncate">{org.name}</span>
-                    {activeOrg && org.id === activeOrg.id && <span className="text-[10px] font-mono">Active</span>}
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F3F4F6] border border-[#E5E7EB] uppercase">
+                      {org.role || 'Member'}
+                    </span>
                   </button>
                 ))
               ) : (
                 <div className="px-3 py-2 text-xs text-[#6B7280]">
-                  {activeOrg ? activeOrg.name : 'No organization selected'}
+                  {user ? 'No authorized organizations' : 'Sign in to view workspaces'}
                 </div>
               )}
               <div className="border-t border-[#E5E7EB] pt-1 mt-1">
@@ -219,22 +179,76 @@ export function Header() {
                   onClick={() => setShowOrgDropdown(false)}
                   className="block px-3 py-1.5 text-[#4B5563] hover:text-[#111827] hover:bg-[#F3F4F6]"
                 >
-                  Manage All Workspaces...
+                  Workspace Directory...
                 </Link>
               </div>
             </div>
           )}
         </div>
 
-        {/* User Context Avatar */}
-        <div className="flex items-center gap-1.5 border-l border-[#E5E7EB] pl-3 text-xs text-[#4B5563]">
-          <div className="w-6 h-6 rounded-full bg-[#F3F4F6] border border-[#E5E7EB] flex items-center justify-center font-mono text-[10px] text-[#111827]">
-            {principal?.user_id ? principal.user_id.slice(0, 2).toUpperCase() : 'PI'}
+        {/* User Session & Role Profile per Handoff §7 & §8 */}
+        {user ? (
+          <div className="relative">
+            <button
+              type="button"
+              suppressHydrationWarning
+              onClick={() => setShowUserDropdown(!showUserDropdown)}
+              className="flex items-center gap-2 border-l border-[#E5E7EB] pl-3 py-1 text-xs text-[#4B5563] hover:text-[#111827] transition"
+            >
+              <div className="w-7 h-7 rounded-full bg-[#111827] text-white flex items-center justify-center font-mono text-xs font-semibold">
+                {user.email ? user.email.slice(0, 2).toUpperCase() : 'ME'}
+              </div>
+              <div className="hidden lg:flex flex-col text-left">
+                <span className="text-xs font-semibold text-[#111827] max-w-[130px] truncate leading-tight">
+                  {user.email}
+                </span>
+                <span className="text-[10px] text-[#6B7280] font-mono uppercase tracking-wider capitalize">
+                  {displayRole}
+                </span>
+              </div>
+              <ChevronDown className="w-3 h-3 text-[#6B7280]" />
+            </button>
+
+            {showUserDropdown && (
+              <div className="absolute right-0 mt-1 w-64 bg-[#FFFFFF] border border-[#E5E7EB] rounded-lg shadow-lg py-1.5 z-50 text-xs">
+                <div className="px-3 py-2 border-b border-[#E5E7EB] space-y-1">
+                  <div className="font-semibold text-[#111827] truncate">{user.email}</div>
+                  <div className="flex items-center gap-1.5 text-[#6B7280] font-mono text-[10px]">
+                    <Shield className="w-3 h-3 text-emerald-600" />
+                    <span>Role: {displayRole}</span>
+                  </div>
+                  {currentUser?.user_id && (
+                    <div className="text-[10px] font-mono text-[#9CA3AF] truncate">
+                      ID: {currentUser.user_id}
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  suppressHydrationWarning
+                  onClick={async () => {
+                    setShowUserDropdown(false);
+                    await signOut();
+                    router.push('/workspaces');
+                  }}
+                  className="w-full text-left px-3 py-2 text-red-600 hover:bg-red-50 flex items-center gap-2 transition"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign Out Session</span>
+                </button>
+              </div>
+            )}
           </div>
-          <span className="hidden lg:inline text-[11px] font-medium text-[#111827]">
-            {principal?.roles?.[0] ? `${principal.roles[0].replace('_', ' ')}` : 'Principal Investigator'}
-          </span>
-        </div>
+        ) : (
+          <Link
+            href="/workspaces"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#111827] hover:bg-[#1F2937] text-white rounded text-xs font-semibold transition"
+          >
+            <LogIn className="w-3 h-3" />
+            <span>Sign In</span>
+          </Link>
+        )}
       </div>
     </header>
   );

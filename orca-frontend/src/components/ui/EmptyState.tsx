@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ORCA 3.0 — Mandatory System States (Empty, Blocked, Unreleased, Error)
  * 
  * Sourced directly from dashboard design.md §4.1:
@@ -48,7 +48,7 @@ export function StateDisplay({
           <p className="text-sm font-medium text-[#111827]">
             {title || 'Loading verified data...'}
           </p>
-          <p className="text-xs text-[#6B7280] mt-1">
+          <p className="text-sm text-[#6B7280] mt-1">
             {description || 'Checking cryptographic digest & permissions'}
           </p>
         </div>
@@ -61,11 +61,11 @@ export function StateDisplay({
           <p className="text-sm font-medium text-[#111827]">
             {title || 'No records available'}
           </p>
-          <p className="text-xs text-[#6B7280] mt-1 max-w-sm">
+          <p className="text-sm text-[#6B7280] mt-1 max-w-sm">
             {description || 'There are no active records in this view.'}
           </p>
           {actionLabel && onAction && (
-            <button
+            <button suppressHydrationWarning
               onClick={onAction}
               className="mt-4 px-3 py-1.5 text-xs font-medium bg-[#111827] text-[#FFFFFF] rounded hover:bg-[#1F2937] transition"
             >
@@ -78,10 +78,10 @@ export function StateDisplay({
     case 'filtered_empty':
       return (
         <div className="flex flex-col items-center justify-center p-8 text-center border border-[#E5E7EB] bg-[#F8F9FA] rounded">
-          <p className="text-xs font-medium text-[#111827]">
+          <p className="text-sm font-medium text-[#111827]">
             {title || 'No results matching current filters'}
           </p>
-          <p className="text-[11px] text-[#6B7280] mt-1">
+          <p className="text-sm text-[#6B7280] mt-1">
             {description || 'Try clearing search filters or broadening your date window.'}
           </p>
         </div>
@@ -94,7 +94,7 @@ export function StateDisplay({
           <p className="text-sm font-medium text-[#111827]">
             {title || 'Access Restricted'}
           </p>
-          <p className="text-xs text-[#6B7280] mt-1 max-w-sm">
+          <p className="text-sm text-[#6B7280] mt-1 max-w-sm">
             {description || 'Your principal role does not hold the required capability.'}
           </p>
         </div>
@@ -107,7 +107,7 @@ export function StateDisplay({
           <p className="text-sm font-medium text-[#111827]">
             {title || 'Network or Service Unavailable'}
           </p>
-          <p className="text-xs text-[#6B7280] mt-1 max-w-sm">
+          <p className="text-sm text-[#6B7280] mt-1 max-w-sm">
             {description || 'Failed to establish connection. Offline fallback active.'}
           </p>
         </div>
@@ -122,12 +122,12 @@ export function StateDisplay({
               {title || 'Capability Not Released'}
             </p>
             {requiredGate && (
-              <span className="font-mono text-[10px] px-1.5 py-0.5 border border-[#E5E7EB] rounded bg-[#FFFFFF] text-[#4B5563]">
+              <span className="font-mono text-xs px-1.5 py-0.5 border border-[#E5E7EB] rounded bg-[#FFFFFF] text-[#4B5563]">
                 {requiredGate}
               </span>
             )}
           </div>
-          <p className="text-xs text-[#6B7280] mt-1 max-w-sm">
+          <p className="text-sm text-[#6B7280] mt-1 max-w-sm">
             {description || 'This feature has not yet passed backend phase gate verification.'}
           </p>
         </div>
@@ -140,11 +140,11 @@ export function StateDisplay({
           <p className="text-sm font-medium text-[#111827]">
             {title || 'Operation Failed'}
           </p>
-          <p className="text-xs text-[#6B7280] mt-1 max-w-sm">
+          <p className="text-sm text-[#6B7280] mt-1 max-w-sm">
             {description || 'An unexpected error occurred during execution.'}
           </p>
           {onAction && (
-            <button
+            <button suppressHydrationWarning
               onClick={onAction}
               className="mt-4 px-3 py-1.5 text-xs font-medium border border-[#111827] text-[#111827] rounded hover:bg-[#F3F4F6] transition"
             >

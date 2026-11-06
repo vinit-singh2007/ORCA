@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ORCA 3.0 — M08 Marine Advisories & Hazard Subscriptions Screen
  * 
  * DESIGN SPECIFICATION:
@@ -89,18 +89,18 @@ export default function MarineAlertsPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#E5E7EB] pb-5">
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-xl font-semibold text-[#111827]">Official Marine Advisories & Notifications</h1>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
+              <h1 className="text-2xl font-semibold text-[#111827]">Official Marine Advisories & Notifications</h1>
+              <span className="text-xs font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
                 M08 · P12
               </span>
             </div>
-            <p className="text-xs text-[#4B5563] mt-1">
+            <p className="text-sm text-[#4B5563] mt-1">
               Active bulletins from India Meteorological Department (IMD) and INCOIS Ocean State Forecast.
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <button suppressHydrationWarning
               onClick={loadData}
               disabled={loading}
               className="p-1.5 border border-[#E5E7EB] rounded hover:border-[#111827] text-[#111827]"
@@ -131,7 +131,7 @@ export default function MarineAlertsPage() {
               <AlertCircle className="w-4 h-4" />
               Advisory Gateway Notice
             </div>
-            <p className="text-xs text-[#4B5563] font-mono">{error}</p>
+            <p className="text-sm text-[#4B5563] font-mono">{error}</p>
           </div>
         )}
 
@@ -146,8 +146,8 @@ export default function MarineAlertsPage() {
           {!loading && advisories.length === 0 && (
             <div className="p-8 text-center border border-[#E5E7EB] rounded bg-[#FFFFFF] space-y-2">
               <ShieldAlert className="w-6 h-6 text-[#9CA3AF] mx-auto" />
-              <h3 className="text-xs font-semibold text-[#111827]">No active hazardous sea advisories</h3>
-              <p className="text-[11px] text-[#6B7280]">Normal conditions reported by meteorological feeds.</p>
+              <h3 className="text-sm font-semibold text-[#111827]">No active hazardous sea advisories</h3>
+              <p className="text-sm text-[#6B7280]">Normal conditions reported by meteorological feeds.</p>
             </div>
           )}
 
@@ -165,11 +165,11 @@ export default function MarineAlertsPage() {
                         {adv.severity || 'Advisory'}
                       </Badge>
                     </div>
-                    <span className="text-[10px] font-mono text-[#6B7280]">
+                    <span className="text-xs font-mono text-[#6B7280]">
                       {adv.source || 'IMD / INCOIS'}
                     </span>
                   </div>
-                  <p className="text-xs text-[#4B5563]">{adv.details || adv.description || 'Active weather bulletin'}</p>
+                  <p className="text-sm text-[#4B5563]">{adv.details || adv.description || 'Active weather bulletin'}</p>
                 </div>
               ))}
             </div>
@@ -187,8 +187,8 @@ export default function MarineAlertsPage() {
           {!loading && subscriptions.length === 0 && (
             <div className="p-8 text-center border border-[#E5E7EB] rounded bg-[#FFFFFF] space-y-2">
               <Bell className="w-6 h-6 text-[#9CA3AF] mx-auto" />
-              <h3 className="text-xs font-semibold text-[#111827]">No channel subscriptions registered</h3>
-              <p className="text-[11px] text-[#6B7280]">Subscribe to receive automated hazard SMS or voice alerts.</p>
+              <h3 className="text-sm font-semibold text-[#111827]">No channel subscriptions registered</h3>
+              <p className="text-sm text-[#6B7280]">Subscribe to receive automated hazard SMS or voice alerts.</p>
             </div>
           )}
 
@@ -200,7 +200,7 @@ export default function MarineAlertsPage() {
                     <span className="font-semibold text-[#111827]">{sub.hazard_type}</span>
                     <Badge variant="outline">{sub.channel}</Badge>
                   </div>
-                  <div className="text-[11px] text-[#6B7280] font-mono">Region: {sub.region}</div>
+                  <div className="text-xs text-[#6B7280] font-mono">Region: {sub.region}</div>
                 </div>
               ))}
             </div>

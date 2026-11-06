@@ -74,7 +74,7 @@ export default function AgentDirectoryPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <button
+            <button suppressHydrationWarning
               onClick={loadAgents}
               disabled={loading}
               className="p-1.5 border border-[#E5E7EB] rounded hover:border-[#111827] text-[#111827]"

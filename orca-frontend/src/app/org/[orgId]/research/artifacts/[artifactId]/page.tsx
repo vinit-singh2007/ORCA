@@ -227,7 +227,7 @@ export default function ArtifactInspectorPage() {
                     <span className="text-[#111827] font-semibold">Snapshot #{idx + 1}: {snap.snapshot_id}</span>
                     <span className="text-[#6B7280] block text-[11px] truncate max-w-lg mt-0.5">{snap.digest}</span>
                   </div>
-                  <button
+                  <button suppressHydrationWarning
                     onClick={() => copyToClipboard(snap.digest, `snap-${idx}`)}
                     className="p-1 hover:text-[#111827] text-[#6B7280]"
                   >

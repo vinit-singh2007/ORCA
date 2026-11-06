@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ORCA 3.0 — M05 Potential Fishing Zones (PFZ) Screen
  * 
  * DESIGN SPECIFICATION:
@@ -74,18 +74,18 @@ export default function FisheriesPFZPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#E5E7EB] pb-5">
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-xl font-semibold text-[#111827]">Potential Fishing Zones (PFZ)</h1>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
+              <h1 className="text-2xl font-semibold text-[#111827]">Potential Fishing Zones (PFZ)</h1>
+              <span className="text-xs font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
                 M05 · P12
               </span>
             </div>
-            <p className="text-xs text-[#4B5563] mt-1">
+            <p className="text-sm text-[#4B5563] mt-1">
               INCOIS thermal front lines, chlorophyll-a bloom boundaries, and safe navigational coordinates.
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <button suppressHydrationWarning
               onClick={loadZones}
               disabled={loading}
               className="p-1.5 border border-[#E5E7EB] rounded hover:border-[#111827] text-[#111827]"
@@ -116,7 +116,7 @@ export default function FisheriesPFZPage() {
               <AlertCircle className="w-4 h-4" />
               PFZ Feed Notice
             </div>
-            <p className="text-xs text-[#4B5563] font-mono">{error}</p>
+            <p className="text-sm text-[#4B5563] font-mono">{error}</p>
           </div>
         )}
 
@@ -125,7 +125,7 @@ export default function FisheriesPFZPage() {
           <div className="p-12 text-center border border-[#E5E7EB] rounded bg-[#FFFFFF] space-y-2">
             <Fish className="w-8 h-8 text-[#9CA3AF] mx-auto" />
             <h3 className="text-sm font-semibold text-[#111827]">No active fishing zones returned</h3>
-            <p className="text-xs text-[#6B7280]">
+            <p className="text-sm text-[#6B7280]">
               Cloud cover or satellite pass cycle may temporarily restrict optical chlorophyll PFZ processing.
             </p>
           </div>
@@ -141,23 +141,23 @@ export default function FisheriesPFZPage() {
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="text-sm font-semibold text-[#111827]">{zone.name}</h3>
-                    <div className="text-[11px] font-mono text-[#6B7280] mt-0.5">Depth: {zone.depth_range}</div>
+                    <div className="text-xs font-mono text-[#6B7280] mt-0.5">Depth: {zone.depth_range}</div>
                   </div>
                   <Badge variant="verified">Confidence: {zone.confidence}</Badge>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 p-2.5 bg-[#F8F9FA] rounded text-xs font-mono">
                   <div>
-                    <span className="text-[#6B7280] block text-[10px]">SST GRADIENT</span>
+                    <span className="text-[#6B7280] block text-xs">SST GRADIENT</span>
                     <span className="font-semibold text-[#111827]">{zone.sst_gradient}</span>
                   </div>
                   <div>
-                    <span className="text-[#6B7280] block text-[10px]">CHLOROPHYLL</span>
+                    <span className="text-[#6B7280] block text-xs">CHLOROPHYLL</span>
                     <span className="font-semibold text-[#111827]">{zone.chlorophyll_index}</span>
                   </div>
                 </div>
 
-                <div className="text-[11px] font-mono text-[#6B7280] flex justify-between pt-1">
+                <div className="text-xs font-mono text-[#6B7280] flex justify-between pt-1">
                   <span>Valid Until: {zone.valid_until}</span>
                   <span>Source: INCOIS</span>
                 </div>

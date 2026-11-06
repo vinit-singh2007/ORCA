@@ -28,10 +28,12 @@ export interface ApiClientConfig {
 
 export class OrcaApiError extends Error {
   public problem: ProblemDetail;
+  public status: number;
 
-  constructor(problem: ProblemDetail) {
-    super(problem.detail || problem.title);
+  constructor(status: number, problem: ProblemDetail) {
+    super(problem.detail || problem.title || `HTTP ${status}`);
     this.name = 'OrcaApiError';
+    this.status = status;
     this.problem = problem;
   }
 }
@@ -45,7 +47,11 @@ export class OrcaApiClient {
   private orgId?: string;
 
   constructor(config: ApiClientConfig = {}) {
-    this.baseUrl = config.baseUrl || process.env.NEXT_PUBLIC_ORCA_API_URL || 'http://localhost:8000';
+    this.baseUrl =
+      config.baseUrl ||
+      process.env.NEXT_PUBLIC_API_BASE_URL ||
+      process.env.NEXT_PUBLIC_ORCA_API_URL ||
+      'http://10.71.71.246:8000';
     this.getAuthToken = config.getAuthToken;
     this.orgId = config.orgId;
   }
@@ -102,11 +108,20 @@ export class OrcaApiClient {
     }
 
     // Append Auth Bearer token if available
+    let token: string | null = null;
     if (this.getAuthToken) {
-      const token = await this.getAuthToken();
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+      token = await this.getAuthToken();
+    } else if (typeof window !== 'undefined') {
+      try {
+        const { supabase } = await import('@/lib/supabase');
+        const { data: { session } } = await supabase.auth.getSession();
+        token = session?.access_token || null;
+      } catch {
+        // Fallback if supabase not yet initialized
       }
+    }
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
     }
 
     // Required for mutations: Idempotency-Key
@@ -125,6 +140,7 @@ export class OrcaApiClient {
 
     try {
       const response = await fetch(url, {
+        credentials: 'omit',
         ...fetchOptions,
         headers,
       });
@@ -151,7 +167,7 @@ export class OrcaApiClient {
             retryable: response.status >= 500,
           };
         }
-        throw new OrcaApiError(problem);
+        throw new OrcaApiError(response.status, problem);
       }
 
       return (await response.json()) as R;
@@ -160,14 +176,14 @@ export class OrcaApiClient {
         throw err;
       }
       // Network failure
-      throw new OrcaApiError({
+      throw new OrcaApiError(503, {
         type: 'https://docs.orca.example/problems/network-failure',
         title: 'Backend Connection Refused / Network Error',
         status: 503,
         detail: (err as Error).message || `Unable to connect to ORCA API gateway at ${this.baseUrl}${endpoint}`,
         instance: endpoint,
         code: 'SOURCE_UNAVAILABLE',
-        request_id: headers['X-Request-ID'],
+        request_id: headers['X-Request-ID'] || '',
         retryable: true,
       });
     }
@@ -178,6 +194,10 @@ export class OrcaApiClient {
   // ========================================================
 
   /** GET /livez - Gateway process liveness */
+  async livez(): Promise<{ status: string }> {
+    return this.request<{ status: string }>('/livez');
+  }
+
   async getLivez() {
     return this.request<{ status: 'alive' }>('/livez');
   }
@@ -211,14 +231,58 @@ export class OrcaApiClient {
   // ========================================================
 
   /** GET /v1/me - Principal identity and memberships */
+  async me(): Promise<T.CurrentUser> {
+    return this.request<T.CurrentUser>('/v1/me');
+  }
+
   async getMe() {
     return this.request<T.CurrentPrincipal>('/v1/me');
   }
 
   /** GET /v1/organizations - Permitted organizations list */
-  async listOrganizations(cursor?: string, limit?: number) {
-    return this.request<T.Page<T.OrganizationSummary>>('/v1/organizations', {
-      params: { cursor, limit },
+  async listOrganizations(cursorOrParams?: string | { limit?: number; cursor?: string }, limit?: number) {
+    if (typeof cursorOrParams === 'object' && cursorOrParams !== null) {
+      return this.request<T.OrganizationPage>('/v1/organizations', { params: cursorOrParams as Record<string, any> });
+    }
+    return this.request<T.OrganizationPage>('/v1/organizations', {
+      params: { cursor: cursorOrParams, limit },
+    });
+  }
+
+  // ========================================================
+  // Real Research Demo API (Handoff 6 Nov 2026 §9)
+  // ========================================================
+
+  /** GET /v1/demo/research-runs/{result_id} - Real descriptive SST result */
+  async getDemoResult(resultId: string, organizationId: string): Promise<T.DemoResult> {
+    return this.request<T.DemoResult>(`/v1/demo/research-runs/${resultId}`, {
+      params: { organization_id: organizationId },
+    });
+  }
+
+  /** POST /v1/demo/research-runs - Recompute from stored snapshot */
+  async recomputeDemoRun(organizationId: string, snapshotId: string): Promise<T.DemoResult> {
+    return this.request<T.DemoResult>('/v1/demo/research-runs', {
+      method: 'POST',
+      body: JSON.stringify({
+        organization_id: organizationId,
+        snapshot_id: snapshotId,
+      }),
+    });
+  }
+
+  /** POST /v1/demo/research-runs/{result_id}/public-export - Generate minimal public reference */
+  async exportDemoPublicReference(
+    resultId: string,
+    organizationId: string,
+    snapshotId: string
+  ): Promise<T.DemoPublicExport> {
+    return this.request<T.DemoPublicExport>(`/v1/demo/research-runs/${resultId}/public-export`, {
+      method: 'POST',
+      body: JSON.stringify({
+        organization_id: organizationId,
+        snapshot_id: snapshotId,
+      }),
     });
   }
 
@@ -286,8 +350,12 @@ export class OrcaApiClient {
   // ========================================================
 
   /** GET /v1/research/projects - Research projects list */
-  async listProjects(params?: { org_id?: string; cursor?: string; limit?: number; state?: string }) {
-    return this.request<T.Page<T.ResearchProject>>('/v1/research/projects', { params });
+  async listProjects(params?: { organization_id?: string; org_id?: string; cursor?: string; limit?: number; state?: string }) {
+    const queryParams: Record<string, any> = { ...params };
+    if (queryParams.org_id && !queryParams.organization_id) {
+      queryParams.organization_id = queryParams.org_id;
+    }
+    return this.request<T.Page<T.ResearchProject>>('/v1/research/projects', { params: queryParams });
   }
 
   /** POST /v1/research/projects - Create research project */

@@ -139,7 +139,7 @@ export default function ProjectFilesPage() {
             <label className="px-3.5 py-2 text-xs font-medium rounded bg-[#111827] text-[#FFFFFF] hover:bg-[#1F2937] transition flex items-center gap-1.5 cursor-pointer">
               <Upload className="w-3.5 h-3.5" />
               <span>{uploading ? 'Registering Intent...' : 'Upload File to Object Store'}</span>
-              <input type="file" onChange={handleUploadSimulation} disabled={uploading} className="hidden" />
+              <input suppressHydrationWarning type="file" onChange={handleUploadSimulation} disabled={uploading} className="hidden" />
             </label>
           </div>
         </div>
@@ -154,7 +154,7 @@ export default function ProjectFilesPage() {
         {/* Search */}
         <div className="relative">
           <Search className="w-4 h-4 absolute left-3 top-2.5 text-[#6B7280]" />
-          <input
+          <input suppressHydrationWarning
             type="text"
             placeholder="Search project files by filename..."
             value={searchQuery}

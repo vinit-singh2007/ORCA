@@ -183,7 +183,7 @@ export default function ResearchStudioPage() {
           <div className="flex items-center gap-2">
             <StatusIndicator category="science" state={investigation.scientific_status || 'draft'} />
             <Badge variant="outline">Risk: {investigation.risk_tier || 'tier_1'}</Badge>
-            <button
+            <button suppressHydrationWarning
               onClick={handleExportRoCrate}
               disabled={exporting}
               className="flex items-center gap-1 px-2.5 py-1 border border-[#E5E7EB] hover:border-[#111827] rounded text-xs text-[#111827] bg-[#FFFFFF] transition"
@@ -283,7 +283,7 @@ export default function ResearchStudioPage() {
             {/* View Selector Header */}
             <div className="px-4 py-2.5 bg-[#F8F9FA] border-b border-[#E5E7EB] flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                <button
+                <button suppressHydrationWarning
                   onClick={() => setCenterView('map')}
                   className={`flex items-center gap-1.5 px-2.5 py-1 text-xs rounded transition ${
                     centerView === 'map'
@@ -294,7 +294,7 @@ export default function ResearchStudioPage() {
                   <Map className="w-3.5 h-3.5" />
                   Geospatial Map
                 </button>
-                <button
+                <button suppressHydrationWarning
                   onClick={() => setCenterView('chart')}
                   className={`flex items-center gap-1.5 px-2.5 py-1 text-xs rounded transition ${
                     centerView === 'chart'
@@ -305,7 +305,7 @@ export default function ResearchStudioPage() {
                   <BarChart3 className="w-3.5 h-3.5" />
                   Statistical Charts
                 </button>
-                <button
+                <button suppressHydrationWarning
                   onClick={() => setCenterView('table')}
                   className={`flex items-center gap-1.5 px-2.5 py-1 text-xs rounded transition ${
                     centerView === 'table'

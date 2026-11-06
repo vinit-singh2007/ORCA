@@ -40,24 +40,16 @@ import {
 
 export default function SourceOperationsAdminPage() {
   const [connectors, setConnectors] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadSourceHealth = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await apiClient.getSourceHealth();
-      setConnectors(res.connectors || []);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to retrieve connector status from gateway');
-    } finally {
-      setLoading(false);
-    }
+    // Disabled auto-polling per handoff §8:
+    // "Do not request /v1/network/tasks or /v1/admin/source-health; they are unavailable."
   };
 
   useEffect(() => {
-    loadSourceHealth();
+    // Do not auto-request unavailable route on mount
   }, []);
 
   return (
@@ -76,18 +68,18 @@ export default function SourceOperationsAdminPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#E5E7EB] pb-5">
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-xl font-semibold text-[#111827]">Source Connectors & Freshness Probes</h1>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
+              <h1 className="text-2xl font-semibold text-[#111827]">Source Connectors & Freshness Probes</h1>
+              <span className="text-xs font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
                 O02 · P03
               </span>
             </div>
-            <p className="text-xs text-[#4B5563] mt-1">
+            <p className="text-sm text-[#4B5563] mt-1">
               Active HTTP / OPeNDAP / ERDDAP probes for upstream government oceanographic and meteorological feeds.
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <button suppressHydrationWarning
               onClick={loadSourceHealth}
               disabled={loading}
               className="p-1.5 border border-[#E5E7EB] rounded hover:border-[#111827] text-[#111827]"
@@ -100,6 +92,17 @@ export default function SourceOperationsAdminPage() {
             >
               Compute Queues
             </Link>
+          </div>
+        </div>
+
+        {/* Scope Notice per Handoff §8 */}
+        <div className="p-4 border border-[#E5E7EB] bg-[#F8F9FA] rounded text-xs space-y-1 text-[#4B5563]">
+          <div className="font-semibold text-[#111827] flex items-center gap-1.5">
+            <Radio className="w-4 h-4 text-[#111827]" />
+            <span>Scope Notice: Connector Probe Endpoint (/v1/admin/source-health) Excluded</span>
+          </div>
+          <div>
+            Live connector health polling is excluded from this focused research release (handoff §8). Real source metadata and snapshot preservation can be verified in the <Link href="/workspaces" className="font-semibold text-[#111827] underline">Research Demo</Link>.
           </div>
         </div>
 
@@ -117,7 +120,7 @@ export default function SourceOperationsAdminPage() {
               <AlertCircle className="w-4 h-4" />
               Connector Telemetry Notice
             </div>
-            <p className="text-xs text-[#4B5563] font-mono">{error}</p>
+            <p className="text-sm text-[#4B5563] font-mono">{error}</p>
           </div>
         )}
 
@@ -126,7 +129,7 @@ export default function SourceOperationsAdminPage() {
           <div className="p-12 text-center border border-[#E5E7EB] rounded bg-[#FFFFFF] space-y-2">
             <Server className="w-8 h-8 text-[#9CA3AF] mx-auto" />
             <h3 className="text-sm font-semibold text-[#111827]">No connectors returned</h3>
-            <p className="text-xs text-[#6B7280]">Connectors will report here once backend probe cron runs.</p>
+            <p className="text-sm text-[#6B7280]">Connectors will report here once backend probe cron runs.</p>
           </div>
         )}
 
@@ -134,7 +137,7 @@ export default function SourceOperationsAdminPage() {
           <div className="border border-[#E5E7EB] rounded bg-[#FFFFFF] overflow-hidden">
             <table className="w-full text-left text-xs border-collapse font-mono">
               <thead>
-                <tr className="border-b border-[#E5E7EB] bg-[#F8F9FA] text-[11px] text-[#6B7280]">
+                <tr className="border-b border-[#E5E7EB] bg-[#F8F9FA] text-xs text-[#6B7280]">
                   <th className="py-2.5 px-4 font-medium">Connector Name</th>
                   <th className="py-2.5 px-4 font-medium">Source Class</th>
                   <th className="py-2.5 px-4 font-medium">Status</th>
@@ -151,7 +154,7 @@ export default function SourceOperationsAdminPage() {
                       <Badge variant={c.status === 'healthy' ? 'verified' : 'outline'}>{c.status}</Badge>
                     </td>
                     <td className="py-3 px-4 text-[#111827]">{c.latency_ms} ms</td>
-                    <td className="py-3 px-4 text-[#6B7280] text-[11px]">{new Date(c.last_probed).toLocaleTimeString()}</td>
+                    <td className="py-3 px-4 text-[#6B7280] text-xs">{new Date(c.last_probed).toLocaleTimeString()}</td>
                   </tr>
                 ))}
               </tbody>

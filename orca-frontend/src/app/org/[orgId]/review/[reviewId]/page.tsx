@@ -260,7 +260,7 @@ export default function ScientificReviewDetailsPage() {
           <form onSubmit={handleSubmitReview} className="space-y-4 text-xs">
             <div>
               <label className="block text-[#4B5563] font-medium mb-1">Verdict Classification</label>
-              <select
+              <select suppressHydrationWarning
                 value={verdict}
                 onChange={(e) => setVerdict(e.target.value as any)}
                 className="w-full max-w-sm px-3 py-2 border border-[#E5E7EB] rounded bg-[#FFFFFF] text-[#111827]"
@@ -274,7 +274,7 @@ export default function ScientificReviewDetailsPage() {
 
             <div>
               <label className="block text-[#4B5563] font-medium mb-1">Scientific Review Statement & Audit Notes</label>
-              <textarea
+              <textarea suppressHydrationWarning
                 value={reviewStatement}
                 onChange={(e) => setReviewStatement(e.target.value)}
                 rows={3}
@@ -282,7 +282,7 @@ export default function ScientificReviewDetailsPage() {
               />
             </div>
 
-            <button
+            <button suppressHydrationWarning
               type="submit"
               disabled={submitting}
               className="px-4 py-2 text-xs font-medium rounded bg-[#111827] text-white hover:bg-[#374151] transition flex items-center gap-2"

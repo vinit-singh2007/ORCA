@@ -221,7 +221,7 @@ export default function ResearchReportsPage() {
             By signing and publishing, you commit the cryptographic root digest of this investigation into the ORCA public citation index.
           </p>
           <form onSubmit={handlePublish} className="pt-2">
-            <button
+            <button suppressHydrationWarning
               type="submit"
               disabled={publishing}
               className="px-4 py-2 text-xs font-medium rounded bg-[#111827] text-[#FFFFFF] hover:bg-[#1F2937] transition flex items-center gap-2"

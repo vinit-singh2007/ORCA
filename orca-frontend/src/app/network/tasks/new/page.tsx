@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ORCA 3.0 — N03 Publish Public Research Task Screen
  * 
  * DESIGN SPECIFICATION:
@@ -85,12 +85,12 @@ export default function PublishNetworkTaskPage() {
         {/* Header */}
         <div className="border-b border-[#E5E7EB] pb-5">
           <div className="flex items-center gap-2.5">
-            <h1 className="text-xl font-semibold text-[#111827]">Broadcast Task to Arkiv Network</h1>
-            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
+            <h1 className="text-2xl font-semibold text-[#111827]">Broadcast Task to Arkiv Network</h1>
+            <span className="text-xs font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
               N03 · P11
             </span>
           </div>
-          <p className="text-xs text-[#4B5563] mt-1">
+          <p className="text-sm text-[#4B5563] mt-1">
             Dispatch an independent reproduction or data-processing task to decentralized A2A agent providers on the Arkiv board.
           </p>
         </div>
@@ -105,10 +105,10 @@ export default function PublishNetworkTaskPage() {
         {/* Task Formulation Form */}
         <form onSubmit={handleSubmit} className="border border-[#E5E7EB] rounded p-6 bg-[#FFFFFF] space-y-5 text-xs">
           <div>
-            <label className="text-[11px] font-semibold text-[#111827] uppercase tracking-wider block mb-1">
+            <label className="text-xs font-semibold text-[#111827] uppercase tracking-wider block mb-1">
               Task Title
             </label>
-            <input
+            <input suppressHydrationWarning
               type="text"
               required
               value={title}
@@ -119,10 +119,10 @@ export default function PublishNetworkTaskPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-[11px] font-semibold text-[#111827] uppercase tracking-wider block mb-1">
+              <label className="text-xs font-semibold text-[#111827] uppercase tracking-wider block mb-1">
                 Required Capability
               </label>
-              <select
+              <select suppressHydrationWarning
                 value={capability}
                 onChange={(e) => setCapability(e.target.value)}
                 className="w-full px-3 py-2 border border-[#E5E7EB] rounded bg-[#FFFFFF] text-[#111827] focus:outline-none focus:border-[#111827]"
@@ -134,10 +134,10 @@ export default function PublishNetworkTaskPage() {
             </div>
 
             <div>
-              <label className="text-[11px] font-semibold text-[#111827] uppercase tracking-wider block mb-1">
+              <label className="text-xs font-semibold text-[#111827] uppercase tracking-wider block mb-1">
                 Assignment Policy
               </label>
-              <select
+              <select suppressHydrationWarning
                 value={assignmentPolicy}
                 onChange={(e) => setAssignmentPolicy(e.target.value as 'single' | 'multi')}
                 className="w-full px-3 py-2 border border-[#E5E7EB] rounded bg-[#FFFFFF] text-[#111827] focus:outline-none focus:border-[#111827]"
@@ -149,10 +149,10 @@ export default function PublishNetworkTaskPage() {
           </div>
 
           <div>
-            <label className="text-[11px] font-semibold text-[#111827] uppercase tracking-wider block mb-1">
+            <label className="text-xs font-semibold text-[#111827] uppercase tracking-wider block mb-1">
               Execution Deadline
             </label>
-            <select
+            <select suppressHydrationWarning
               value={deadlineDays}
               onChange={(e) => setDeadlineDays(e.target.value)}
               className="w-full px-3 py-2 border border-[#E5E7EB] rounded bg-[#FFFFFF] text-[#111827] focus:outline-none focus:border-[#111827]"
@@ -172,7 +172,7 @@ export default function PublishNetworkTaskPage() {
               <span>Cancel</span>
             </Link>
 
-            <button
+            <button suppressHydrationWarning
               type="submit"
               disabled={submitting}
               className="px-4 py-2 bg-[#111827] hover:bg-[#1F2937] text-[#FFFFFF] rounded font-medium flex items-center gap-1.5 disabled:opacity-50 transition"

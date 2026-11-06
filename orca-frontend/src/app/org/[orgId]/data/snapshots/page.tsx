@@ -117,7 +117,7 @@ export default function SourceSnapshotsPage() {
             </p>
           </div>
 
-          <button
+          <button suppressHydrationWarning
             onClick={fetchSnapshots}
             className="p-2 border border-[#E5E7EB] rounded hover:bg-[#F8F9FA] text-[#6B7280] hover:text-[#111827]"
             title="Refresh Snapshots"
@@ -135,7 +135,7 @@ export default function SourceSnapshotsPage() {
               <AlertCircle className="w-4 h-4 text-[#111827]" />
               <span>Catalog Gateway: {error}</span>
             </div>
-            <button
+            <button suppressHydrationWarning
               onClick={fetchSnapshots}
               className="px-2 py-0.5 border border-[#111827] rounded text-xs hover:bg-[#111827] hover:text-[#FFFFFF]"
             >
@@ -147,7 +147,7 @@ export default function SourceSnapshotsPage() {
         {/* Filter bar */}
         <div className="relative">
           <Search className="w-4 h-4 absolute left-3 top-2.5 text-[#6B7280]" />
-          <input
+          <input suppressHydrationWarning
             type="text"
             placeholder="Search snapshots by product ID or SHA-256 digest..."
             value={searchQuery}
@@ -193,7 +193,7 @@ export default function SourceSnapshotsPage() {
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-1 font-mono text-[10px] text-[#111827]">
                         <span>{snap.artifact_digest.slice(0, 24)}...</span>
-                        <button
+                        <button suppressHydrationWarning
                           onClick={() => copyDigest(snap.artifact_digest)}
                           className="p-1 hover:bg-[#E5E7EB] rounded"
                           title="Copy Full Digest"

@@ -125,7 +125,7 @@ export default function ProductDetailPage() {
             <AlertCircle className="w-8 h-8 text-[#111827] mx-auto" />
             <h2 className="text-sm font-semibold text-[#111827]">Product Definition Not Available</h2>
             <p className="text-xs text-[#4B5563]">{error || 'Unable to load dataset product.'}</p>
-            <button
+            <button suppressHydrationWarning
               onClick={fetchProduct}
               className="px-3 py-1.5 border border-[#111827] text-xs font-medium rounded hover:bg-[#111827] hover:text-[#FFFFFF]"
             >
@@ -202,7 +202,7 @@ export default function ProductDetailPage() {
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="text-[10px] text-[#6B7280] block">Latitude Bounds</label>
-                  <input
+                  <input suppressHydrationWarning
                     type="text"
                     value={`${minLat}° to ${maxLat}°`}
                     readOnly
@@ -211,7 +211,7 @@ export default function ProductDetailPage() {
                 </div>
                 <div>
                   <label className="text-[10px] text-[#6B7280] block">Longitude Bounds</label>
-                  <input
+                  <input suppressHydrationWarning
                     type="text"
                     value={`${minLon}° to ${maxLon}°`}
                     readOnly
@@ -219,7 +219,7 @@ export default function ProductDetailPage() {
                   />
                 </div>
               </div>
-              <button
+              <button suppressHydrationWarning
                 type="submit"
                 className="w-full py-1.5 bg-[#111827] text-[#FFFFFF] rounded text-xs font-medium hover:bg-[#1F2937]"
               >

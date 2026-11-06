@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Screen O01 — Platform Operations & System Readiness
  * 
  * Sourced from dashboard design.md §5.10 (Screen O01):
@@ -65,17 +65,17 @@ export default function SystemReadinessPage() {
 
   return (
     <Shell>
-      <div className="space-y-6 max-w-6xl">
+      <div className="space-y-6 w-full">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5E7EB] pb-5">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-[#111827]">
+              <h1 className="text-2xl font-bold text-[#111827]">
                 System Capability & Operational Readiness
               </h1>
               <Badge variant="verified">GATE PROBES</Badge>
             </div>
-            <p className="text-xs text-[#4B5563] mt-1">
+            <p className="text-sm text-[#4B5563] mt-1">
               Gateway process liveness, connector probes, and complete P00–P14 release gate qualification.
             </p>
           </div>
@@ -97,7 +97,7 @@ export default function SystemReadinessPage() {
                 ? 'PROBING /livez...'
                 : 'GATEWAY UNREACHABLE'}
             </span>
-            <button
+            <button suppressHydrationWarning
               onClick={checkProbes}
               className="p-1 text-[#6B7280] hover:text-[#111827] rounded hover:bg-[#F3F4F6]"
               title="Refresh Probes"
@@ -115,7 +115,7 @@ export default function SystemReadinessPage() {
               <Badge variant="verified">HEALTHY</Badge>
             </div>
             <div className="text-base font-bold font-mono text-[#111827]">PostgreSQL 16</div>
-            <div className="text-[11px] text-[#6B7280]">
+            <div className="text-xs text-[#6B7280]">
               Row-Level Security (RLS) active on all tenant tables.
             </div>
           </div>
@@ -128,7 +128,7 @@ export default function SystemReadinessPage() {
               </Badge>
             </div>
             <div className="text-base font-bold font-mono text-[#111827]">INCOIS Probed</div>
-            <div className="text-[11px] text-[#6B7280]">
+            <div className="text-xs text-[#6B7280]">
               Last successful subset probe: 14 mins ago.
             </div>
           </div>
@@ -141,7 +141,7 @@ export default function SystemReadinessPage() {
             <div className="text-base font-bold font-mono text-[#111827]">
               {metadata?.release_profile || 'core-C'}
             </div>
-            <div className="text-[11px] text-[#6B7280]">
+            <div className="text-xs text-[#6B7280]">
               Backend target: <code>{process.env.NEXT_PUBLIC_ORCA_API_URL || 'http://localhost:8000'}</code>
             </div>
           </div>
@@ -153,11 +153,11 @@ export default function SystemReadinessPage() {
             <span className="font-mono font-semibold uppercase text-[#4B5563]">
               P00–P14 Complete Gate Readiness Matrix (api design.md §3)
             </span>
-            <span className="font-mono text-[10px] text-[#6B7280]">15 Total Gates</span>
+            <span className="font-mono text-xs text-[#6B7280]">15 Total Gates</span>
           </div>
 
           <table className="w-full text-left">
-            <thead className="border-b border-[#E5E7EB] bg-[#F8F9FA] text-[10px] font-mono uppercase text-[#4B5563]">
+            <thead className="border-b border-[#E5E7EB] bg-[#F8F9FA] text-xs font-mono uppercase text-[#4B5563]">
               <tr>
                 <th className="py-2.5 px-4">Gate</th>
                 <th className="py-2.5 px-4">Scope</th>
@@ -166,7 +166,7 @@ export default function SystemReadinessPage() {
                 <th className="py-2.5 px-4 text-right">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E5E7EB] font-mono text-[11px]">
+            <tbody className="divide-y divide-[#E5E7EB] font-mono text-xs">
               <tr>
                 <td className="py-3 px-4 font-bold text-[#111827]">P00</td>
                 <td className="py-3 px-4 font-sans text-xs">Repository structure, ADRs, Docker baseline, CI/CD pipeline</td>

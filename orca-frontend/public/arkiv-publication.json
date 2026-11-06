@@ -1,0 +1,22 @@
+{
+  "network": "Rabdi",
+  "chainId": 7794095,
+  "entityKey": "0x220085ad817f225f59eb5fe21d14fcf57fe8942c3aea3aacffa4bd43fb798bcf",
+  "transaction": "0x990fe04c31c81d743d79a32e633d0020781be09c5ef82ab50c71881fb976e23d",
+  "owner": "0x8cBFE2bD01C7FDfc500e62A1cF99A01B6A11bCBe",
+  "resultDigest": "sha256:5c7b69bd47950e4936e80e733d75f5d21d16bf971ce1e8e6578ccc4d1b679e79",
+  "resultId": "27d282f6-6cc8-538a-86cb-41033c87afbc",
+  "organizationId": "b7806251-9ebc-4ad0-ac93-044345e83d24",
+  "snapshotId": "15378b78-c803-4b08-a490-4e1678f4694b",
+  "method": "orca.descriptive-sst/1.0",
+  "expiryBlock": 594444,
+  "lifetimeDays": 7,
+  "verificationStatus": "Confirmed publication; read-back verified at publication",
+  "explorerUrl": "https://rabdi.explorer.arkiv.network/tx/0x990fe04c31c81d743d79a32e633d0020781be09c5ef82ab50c71881fb976e23d",
+  "limitations": [
+    "Confirmed wallet-owned public reference. Does not prove institutional identity, ENS authority, scientific correctness, independent peer review or causality.",
+    "Private source CSV and full private result were not published on-chain.",
+    "Entity requested with 7-day lifetime; expiry block 594444."
+  ]
+}
+

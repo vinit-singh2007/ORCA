@@ -205,7 +205,7 @@ export default function AgentIdentityManagementPage() {
           <div className="space-y-3 text-xs">
             <div>
               <label className="block text-[#4B5563] font-medium mb-1 font-mono">ENS Domain Name</label>
-              <input
+              <input suppressHydrationWarning
                 type="text"
                 value={ensName}
                 onChange={(e) => setEnsName(e.target.value)}
@@ -216,7 +216,7 @@ export default function AgentIdentityManagementPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 font-mono text-[11px]">
               <div>
                 <span className="text-[#6B7280] block">RESOLVER CONTRACT:</span>
-                <input
+                <input suppressHydrationWarning
                   type="text"
                   value={resolverAddress}
                   onChange={(e) => setResolverAddress(e.target.value)}
@@ -225,7 +225,7 @@ export default function AgentIdentityManagementPage() {
               </div>
               <div>
                 <span className="text-[#6B7280] block">CONTROLLER WALLET:</span>
-                <input
+                <input suppressHydrationWarning
                   type="text"
                   value={walletAddress}
                   onChange={(e) => setWalletAddress(e.target.value)}
@@ -235,7 +235,7 @@ export default function AgentIdentityManagementPage() {
             </div>
 
             <div className="pt-2 flex items-center gap-3">
-              <button
+              <button suppressHydrationWarning
                 type="button"
                 onClick={handleVerifyChainBinding}
                 disabled={isVerifying}
@@ -246,7 +246,7 @@ export default function AgentIdentityManagementPage() {
               </button>
 
               {bindingState === 'verified' && (
-                <button
+                <button suppressHydrationWarning
                   type="button"
                   onClick={handleRevokeBinding}
                   className="px-3 py-2 border border-[#DC2626] text-[#DC2626] text-xs font-medium rounded hover:bg-[#FEF2F2] transition"

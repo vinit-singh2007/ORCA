@@ -87,7 +87,7 @@ export default function InvestigationsLibraryPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <button suppressHydrationWarning
               onClick={fetchInvestigations}
               className="p-2 border border-[#E5E7EB] rounded hover:bg-[#F8F9FA] text-[#6B7280] hover:text-[#111827]"
               title="Refresh Investigations"
@@ -104,6 +104,30 @@ export default function InvestigationsLibraryPage() {
           </div>
         </div>
 
+        {/* Real Research Demo Feature Banner per Handoff §8 */}
+        <div className="p-4 border border-[#111827] bg-[#F8F9FA] rounded flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-sm text-[#111827]">
+                Descriptive Sea Surface Temperature Research Demo
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#111827] text-[#FFFFFF]">
+                Real Verified Backend Slice
+              </span>
+            </div>
+            <p className="text-xs text-[#4B5563]">
+              Preserved MUR SST access sample, 31-day daily series, deterministic recompute, and confirmed Arkiv Rabdi receipt.
+            </p>
+          </div>
+          <Link
+            href={`/org/${orgId}/research/demo`}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#111827] text-[#FFFFFF] text-xs font-semibold rounded hover:bg-[#374151] transition shrink-0 self-start sm:self-center"
+          >
+            <span>Open Research Demo</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
         {/* Backend Error Banner */}
         {error && (
           <div className="p-3 border border-[#E5E7EB] bg-[#F8F9FA] rounded text-xs text-[#4B5563] flex items-center justify-between">
@@ -111,7 +135,7 @@ export default function InvestigationsLibraryPage() {
               <AlertCircle className="w-4 h-4 text-[#111827]" />
               <span>Gateway Notice (GET /v1/research/investigations): {error}</span>
             </div>
-            <button
+            <button suppressHydrationWarning
               onClick={fetchInvestigations}
               className="px-2 py-0.5 border border-[#111827] rounded text-xs hover:bg-[#111827] hover:text-[#FFFFFF]"
             >
@@ -124,7 +148,7 @@ export default function InvestigationsLibraryPage() {
         <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-[#F8F9FA] p-3 border border-[#E5E7EB] rounded">
           <div className="relative w-full sm:w-80">
             <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-[#6B7280]" />
-            <input
+            <input suppressHydrationWarning
               type="text"
               placeholder="Search by research question..."
               value={searchQuery}
@@ -135,7 +159,7 @@ export default function InvestigationsLibraryPage() {
 
           <div className="flex items-center gap-2 text-xs">
             <span className="text-[#6B7280]">State Filter:</span>
-            <select
+            <select suppressHydrationWarning
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="bg-[#FFFFFF] border border-[#E5E7EB] px-2.5 py-1 text-xs rounded focus:outline-none focus:border-[#111827]"

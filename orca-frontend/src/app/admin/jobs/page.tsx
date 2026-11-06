@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ORCA 3.0 — O03 Durable Compute Jobs & Worker Leases Screen
  * 
  * DESIGN SPECIFICATION:
@@ -80,18 +80,18 @@ export default function JobQueuesAdminPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#E5E7EB] pb-5">
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-xl font-semibold text-[#111827]">Durable Execution & Fencing Leases</h1>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
+              <h1 className="text-2xl font-semibold text-[#111827]">Durable Execution & Fencing Leases</h1>
+              <span className="text-xs font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
                 O03 · P04
               </span>
             </div>
-            <p className="text-xs text-[#4B5563] mt-1">
+            <p className="text-sm text-[#4B5563] mt-1">
               Distributed worker fencing tokens, monotonic lease renewals, and task queue depth telemetry.
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <button suppressHydrationWarning
               onClick={loadJobsData}
               disabled={loading}
               className="p-1.5 border border-[#E5E7EB] rounded hover:border-[#111827] text-[#111827]"
@@ -121,7 +121,7 @@ export default function JobQueuesAdminPage() {
               <AlertCircle className="w-4 h-4" />
               Queue Telemetry Notice
             </div>
-            <p className="text-xs text-[#4B5563] font-mono">{error}</p>
+            <p className="text-sm text-[#4B5563] font-mono">{error}</p>
           </div>
         )}
 
@@ -129,19 +129,19 @@ export default function JobQueuesAdminPage() {
         {!loading && jobHealth && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
             <div className="p-3 border border-[#E5E7EB] rounded bg-[#FFFFFF]">
-              <span className="text-[#6B7280] text-[10px] block">QUEUED JOBS</span>
+              <span className="text-[#6B7280] text-xs block">QUEUED JOBS</span>
               <span className="text-lg font-bold text-[#111827] mt-0.5 block">{jobHealth.queued_jobs ?? 0}</span>
             </div>
             <div className="p-3 border border-[#E5E7EB] rounded bg-[#FFFFFF]">
-              <span className="text-[#6B7280] text-[10px] block">RUNNING WORKERS</span>
+              <span className="text-[#6B7280] text-xs block">RUNNING WORKERS</span>
               <span className="text-lg font-bold text-[#111827] mt-0.5 block">{jobHealth.running_jobs ?? 0}</span>
             </div>
             <div className="p-3 border border-[#E5E7EB] rounded bg-[#FFFFFF]">
-              <span className="text-[#6B7280] text-[10px] block">STALE LEASES</span>
+              <span className="text-[#6B7280] text-xs block">STALE LEASES</span>
               <span className="text-lg font-bold text-[#111827] mt-0.5 block">{jobHealth.stale_leases ?? 0}</span>
             </div>
             <div className="p-3 border border-[#E5E7EB] rounded bg-[#FFFFFF]">
-              <span className="text-[#6B7280] text-[10px] block">FAILURES (24H)</span>
+              <span className="text-[#6B7280] text-xs block">FAILURES (24H)</span>
               <span className="text-lg font-bold text-[#111827] mt-0.5 block">{jobHealth.failed_last_24h ?? 0}</span>
             </div>
           </div>
@@ -159,7 +159,7 @@ export default function JobQueuesAdminPage() {
             <div className="p-12 text-center border border-[#E5E7EB] rounded bg-[#FFFFFF] space-y-2">
               <Cpu className="w-8 h-8 text-[#9CA3AF] mx-auto" />
               <h3 className="text-sm font-semibold text-[#111827]">No active worker leases</h3>
-              <p className="text-xs text-[#6B7280]">Compute workers will register fencing tokens here when scientific runs are active.</p>
+              <p className="text-sm text-[#6B7280]">Compute workers will register fencing tokens here when scientific runs are active.</p>
             </div>
           )}
 
@@ -167,7 +167,7 @@ export default function JobQueuesAdminPage() {
             <div className="border border-[#E5E7EB] rounded bg-[#FFFFFF] overflow-hidden">
               <table className="w-full text-left text-xs border-collapse font-mono">
                 <thead>
-                  <tr className="border-b border-[#E5E7EB] bg-[#F8F9FA] text-[11px] text-[#6B7280]">
+                  <tr className="border-b border-[#E5E7EB] bg-[#F8F9FA] text-xs text-[#6B7280]">
                     <th className="py-2.5 px-4 font-medium">Worker ID</th>
                     <th className="py-2.5 px-4 font-medium">Investigation</th>
                     <th className="py-2.5 px-4 font-medium">Fencing Token</th>
@@ -182,7 +182,7 @@ export default function JobQueuesAdminPage() {
                       <td className="py-3 px-4">
                         <Badge variant="verified">Token #{lease.fencing_token}</Badge>
                       </td>
-                      <td className="py-3 px-4 text-[#6B7280] text-[11px]">{new Date(lease.expires_at).toLocaleTimeString()}</td>
+                      <td className="py-3 px-4 text-[#6B7280] text-xs">{new Date(lease.expires_at).toLocaleTimeString()}</td>
                     </tr>
                   ))}
                 </tbody>

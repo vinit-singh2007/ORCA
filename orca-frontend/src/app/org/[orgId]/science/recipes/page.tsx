@@ -161,7 +161,7 @@ export default function RecipeTemplatesPage() {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <button
+                <button suppressHydrationWarning
                   type="button"
                   onClick={handleCopy}
                   className="px-2.5 py-1 text-xs border border-[#E5E7EB] rounded hover:bg-[#F3F4F6] text-[#4B5563] flex items-center gap-1"
@@ -169,7 +169,7 @@ export default function RecipeTemplatesPage() {
                   {copied ? <Check className="w-3.5 h-3.5 text-[#111827]" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copied ? 'Copied' : 'Copy'}</span>
                 </button>
-                <button
+                <button suppressHydrationWarning
                   type="button"
                   onClick={() => setRecipeJson(DEFAULT_SST_RECIPE)}
                   className="px-2.5 py-1 text-xs border border-[#E5E7EB] rounded hover:bg-[#F3F4F6] text-[#4B5563] flex items-center gap-1"
@@ -180,14 +180,14 @@ export default function RecipeTemplatesPage() {
               </div>
             </div>
 
-            <textarea
+            <textarea suppressHydrationWarning
               value={recipeJson}
               onChange={(e) => setRecipeJson(e.target.value)}
               rows={18}
               className="w-full p-3 font-mono text-xs bg-[#F8F9FA] border border-[#E5E7EB] rounded text-[#111827] focus:outline-none focus:border-[#111827] leading-relaxed"
             />
 
-            <button
+            <button suppressHydrationWarning
               onClick={handleValidate}
               className="w-full py-2 bg-[#111827] hover:bg-[#1F2937] text-[#FFFFFF] text-xs font-medium rounded transition flex items-center justify-center gap-1.5"
             >

@@ -126,14 +126,14 @@ export default function ProjectsIndexPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <button suppressHydrationWarning
               onClick={fetchProjects}
               className="p-2 border border-[#E5E7EB] rounded hover:bg-[#F8F9FA] text-[#6B7280] hover:text-[#111827]"
               title="Refresh Projects"
             >
               <RefreshCw className="w-3.5 h-3.5" />
             </button>
-            <button
+            <button suppressHydrationWarning
               onClick={() => setShowCreateModal(true)}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-[#111827] text-[#FFFFFF] text-xs font-medium rounded hover:bg-[#374151] transition"
             >
@@ -150,7 +150,7 @@ export default function ProjectsIndexPage() {
               <AlertCircle className="w-4 h-4 text-[#111827]" />
               <span>Backend Gateway Notice (GET /v1/research/projects): {error}</span>
             </div>
-            <button
+            <button suppressHydrationWarning
               onClick={fetchProjects}
               className="px-2 py-0.5 border border-[#111827] rounded text-xs hover:bg-[#111827] hover:text-[#FFFFFF]"
             >
@@ -163,7 +163,7 @@ export default function ProjectsIndexPage() {
         <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-[#F8F9FA] p-3 border border-[#E5E7EB] rounded">
           <div className="relative w-full sm:w-80">
             <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-[#6B7280]" />
-            <input
+            <input suppressHydrationWarning
               type="text"
               placeholder="Filter projects by title..."
               value={searchQuery}
@@ -174,7 +174,7 @@ export default function ProjectsIndexPage() {
 
           <div className="flex items-center gap-2 text-xs w-full sm:w-auto">
             <span className="text-[#6B7280]">Status:</span>
-            <select
+            <select suppressHydrationWarning
               value={filterState}
               onChange={(e) => setFilterState(e.target.value as 'all' | 'active' | 'archived')}
               className="bg-[#FFFFFF] border border-[#E5E7EB] px-2.5 py-1 text-xs rounded focus:outline-none focus:border-[#111827]"
@@ -197,7 +197,7 @@ export default function ProjectsIndexPage() {
         {!loading && filteredProjects.length === 0 ? (
           <div className="border border-[#E5E7EB] rounded bg-[#FFFFFF] p-8 text-center text-xs text-[#6B7280] space-y-3">
             <div>No research projects found matching your criteria.</div>
-            <button
+            <button suppressHydrationWarning
               onClick={() => setShowCreateModal(true)}
               className="px-3 py-1.5 bg-[#111827] text-[#FFFFFF] rounded font-medium"
             >
@@ -268,7 +268,7 @@ export default function ProjectsIndexPage() {
                   <FolderKanban className="w-4 h-4 text-[#111827]" />
                   Create Research Project (POST /v1/research/projects)
                 </h3>
-                <button
+                <button suppressHydrationWarning
                   onClick={() => setShowCreateModal(false)}
                   className="text-[#6B7280] hover:text-[#111827] text-sm"
                 >
@@ -281,7 +281,7 @@ export default function ProjectsIndexPage() {
                   <label className="font-semibold text-[#111827] block mb-1">
                     Project Title *
                   </label>
-                  <input
+                  <input suppressHydrationWarning
                     type="text"
                     required
                     placeholder="e.g. Lakshadweep Coral Bleaching SST Analysis"
@@ -295,7 +295,7 @@ export default function ProjectsIndexPage() {
                   <label className="font-semibold text-[#111827] block mb-1">
                     Scientific Description
                   </label>
-                  <textarea
+                  <textarea suppressHydrationWarning
                     rows={3}
                     placeholder="Explain the oceanographic scope and hypotheses..."
                     value={newProjectDesc}
@@ -308,7 +308,7 @@ export default function ProjectsIndexPage() {
                   <label className="font-semibold text-[#111827] block mb-1">
                     Access Classification *
                   </label>
-                  <select
+                  <select suppressHydrationWarning
                     value={newProjectAccess}
                     onChange={(e) => setNewProjectAccess(e.target.value as AccessClass)}
                     className="w-full border border-[#E5E7EB] rounded p-2 focus:outline-none focus:border-[#111827]"
@@ -321,14 +321,14 @@ export default function ProjectsIndexPage() {
                 </div>
 
                 <div className="pt-2 flex justify-end gap-2 border-t border-[#E5E7EB]">
-                  <button
+                  <button suppressHydrationWarning
                     type="button"
                     onClick={() => setShowCreateModal(false)}
                     className="px-3 py-1.5 border border-[#E5E7EB] text-[#4B5563] rounded hover:bg-[#F3F4F6]"
                   >
                     Cancel
                   </button>
-                  <button
+                  <button suppressHydrationWarning
                     type="submit"
                     disabled={creating}
                     className="px-3.5 py-1.5 bg-[#111827] text-[#FFFFFF] font-medium rounded hover:bg-[#1F2937] disabled:opacity-50"

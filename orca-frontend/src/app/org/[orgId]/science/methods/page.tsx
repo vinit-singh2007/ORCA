@@ -155,7 +155,7 @@ export default function ScientificMethodsPage() {
         {/* Search */}
         <div className="relative">
           <Search className="w-4 h-4 absolute left-3 top-2.5 text-[#6B7280]" />
-          <input
+          <input suppressHydrationWarning
             type="text"
             placeholder="Search methods by algorithm ID, formula, or category..."
             value={searchQuery}

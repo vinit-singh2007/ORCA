@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ORCA 3.0 — Screen N08: Arkiv State & Transaction Explorer
  * 
  * DESIGN SPECIFICATION:
@@ -151,12 +151,12 @@ export default function ArkivExplorerPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#E5E7EB] pb-5">
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-xl font-semibold text-[#111827]">Arkiv State & Transaction Explorer</h1>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
+              <h1 className="text-2xl font-semibold text-[#111827]">Arkiv State & Transaction Explorer</h1>
+              <span className="text-xs font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
                 N08 · P11
               </span>
             </div>
-            <p className="text-xs text-[#4B5563] mt-1">
+            <p className="text-sm text-[#4B5563] mt-1">
               Cryptographic ledger inspector for decentralized task claims, execution commitments, and Arkiv Rabdi state transitions.
             </p>
           </div>
@@ -180,7 +180,7 @@ export default function ArkivExplorerPage() {
         {/* Query Input */}
         <div className="relative">
           <Search className="w-4 h-4 absolute left-3 top-2.5 text-[#6B7280]" />
-          <input
+          <input suppressHydrationWarning
             type="text"
             placeholder="Query by entity key (e.g. arkiv:rabdi:...), transaction hash, or wallet address..."
             value={searchKey}
@@ -192,7 +192,7 @@ export default function ArkivExplorerPage() {
         {loading ? (
           <div className="p-12 text-center border border-[#E5E7EB] rounded bg-[#FFFFFF]">
             <Loader2 className="w-6 h-6 animate-spin mx-auto text-[#6B7280]" />
-            <p className="text-xs text-[#6B7280] mt-2">Connecting to Arkiv Rabdi RPC...</p>
+            <p className="text-sm text-[#6B7280] mt-2">Connecting to Arkiv Rabdi RPC...</p>
           </div>
         ) : error ? (
           <div className="p-4 bg-red-50 border border-red-200 rounded text-xs text-red-700 flex items-center gap-2">
@@ -212,7 +212,7 @@ export default function ArkivExplorerPage() {
             <div className="lg:col-span-2 border border-[#E5E7EB] rounded bg-[#FFFFFF] divide-y divide-[#E5E7EB]">
               <div className="px-4 py-3 bg-[#F8F9FA] border-b border-[#E5E7EB] flex justify-between items-center text-xs">
                 <span className="font-semibold text-[#111827]">Indexed Entity Transitions</span>
-                <span className="font-mono text-[#6B7280] text-[11px]">{filteredEntities.length} commitments</span>
+                <span className="font-mono text-[#6B7280] text-xs">{filteredEntities.length} commitments</span>
               </div>
 
               {filteredEntities.map((item) => (
@@ -227,17 +227,17 @@ export default function ArkivExplorerPage() {
                 >
                   <div className="flex justify-between items-start gap-2">
                     <div>
-                      <span className="font-mono text-[10px] uppercase text-[#6B7280] block font-semibold">
+                      <span className="font-mono text-xs uppercase text-[#6B7280] block font-semibold">
                         {item.entityType.replace(/_/g, ' ')} · RABDI BLOCK #{item.blockNumber}
                       </span>
-                      <h3 className="text-xs font-semibold text-[#111827] mt-0.5">{item.payloadSummary}</h3>
+                      <h3 className="text-sm font-semibold text-[#111827] mt-0.5">{item.payloadSummary}</h3>
                     </div>
-                    <Badge variant="outline" className="font-mono uppercase text-[10px]">
+                    <Badge variant="outline" className="font-mono uppercase text-xs">
                       {item.ledgerStatus}
                     </Badge>
                   </div>
 
-                  <div className="flex items-center gap-3 mt-2 text-[10px] font-mono text-[#6B7280]">
+                  <div className="flex items-center gap-3 mt-2 text-xs font-mono text-[#6B7280]">
                     <span>Tx: {item.txHash.slice(0, 16)}...</span>
                     <span>·</span>
                     <span>Sender: {item.senderAddress.slice(0, 10)}...</span>
@@ -252,7 +252,7 @@ export default function ArkivExplorerPage() {
                 <span className="text-xs font-semibold text-[#111827] font-mono uppercase tracking-wider">
                   Cryptographic Commitment
                 </span>
-                <p className="text-[11px] text-[#6B7280] mt-0.5">
+                <p className="text-sm text-[#6B7280] mt-0.5">
                   Exact state payload submitted to Arkiv Rabdi ledger.
                 </p>
               </div>
@@ -260,22 +260,22 @@ export default function ArkivExplorerPage() {
               {selectedEntity ? (
                 <div className="space-y-4 text-xs font-mono">
                   <div>
-                    <span className="text-[#6B7280] block text-[10px] uppercase">Entity Key</span>
-                    <div className="p-2 bg-[#F8F9FA] border border-[#E5E7EB] rounded text-[10px] text-[#111827] break-all">
+                    <span className="text-[#6B7280] block text-xs uppercase">Entity Key</span>
+                    <div className="p-2 bg-[#F8F9FA] border border-[#E5E7EB] rounded text-xs text-[#111827] break-all">
                       {selectedEntity.entityKey}
                     </div>
                   </div>
 
                   <div>
-                    <span className="text-[#6B7280] block text-[10px] uppercase">Rabdi Tx Hash</span>
-                    <div className="p-2 bg-[#F8F9FA] border border-[#E5E7EB] rounded text-[10px] text-[#111827] break-all">
+                    <span className="text-[#6B7280] block text-xs uppercase">Rabdi Tx Hash</span>
+                    <div className="p-2 bg-[#F8F9FA] border border-[#E5E7EB] rounded text-xs text-[#111827] break-all">
                       {selectedEntity.txHash}
                     </div>
                   </div>
 
                   <div>
-                    <span className="text-[#6B7280] block text-[10px] uppercase">Sender Wallet</span>
-                    <div className="p-2 bg-[#F8F9FA] border border-[#E5E7EB] rounded text-[10px] text-[#111827] break-all">
+                    <span className="text-[#6B7280] block text-xs uppercase">Sender Wallet</span>
+                    <div className="p-2 bg-[#F8F9FA] border border-[#E5E7EB] rounded text-xs text-[#111827] break-all">
                       {selectedEntity.senderAddress}
                     </div>
                   </div>
@@ -287,12 +287,12 @@ export default function ArkivExplorerPage() {
                         <FileCheck2 className="w-3.5 h-3.5 text-[#111827]" />
                         <span>Paired Scientific Evidence</span>
                       </div>
-                      <div className="text-[11px] space-y-1 text-[#4B5563]">
+                      <div className="text-xs space-y-1 text-[#4B5563]">
                         <div>
                           Method: <code className="font-mono text-[#111827]">{selectedEntity.offchainEvidence.methodId} (v{selectedEntity.offchainEvidence.methodVersion})</code>
                         </div>
                         <div>
-                          Result Digest: <code className="font-mono text-[10px] text-[#111827] break-all">{selectedEntity.offchainEvidence.resultHash}</code>
+                          Result Digest: <code className="font-mono text-xs text-[#111827] break-all">{selectedEntity.offchainEvidence.resultHash}</code>
                         </div>
                         <div>
                           Peer Review: <span className="font-medium text-emerald-700 capitalize">{selectedEntity.offchainEvidence.scientificReviewStatus.replace(/_/g, ' ')}</span>

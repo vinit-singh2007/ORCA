@@ -210,8 +210,10 @@ export interface OrganizationSummary {
   id: UUID;
   slug: string;
   name: string;
-  visibility: 'public' | 'private';
-  verification_status: 'unverified' | 'pending' | 'verified';
+  visibility: 'public' | 'private' | string;
+  verification_status?: 'unverified' | 'pending' | 'verified';
+  role?: string;
+  tenant_id?: string;
 }
 
 export interface Member {
@@ -589,5 +591,49 @@ export interface APIMetadata {
     implemented: boolean;
     live_verified: boolean;
   }>;
+}
+
+// ==========================================
+// 8. Demo & Real Identity DTOs (Handoff 6 Nov 2026)
+// ==========================================
+
+export interface CurrentUser {
+  user_id: string;
+  orgs: OrganizationSummary[];
+  roles: string[];
+  capabilities: string[];
+  next_cursor: string | null;
+}
+
+export interface DemoResult {
+  id: string;
+  snapshot_id: string;
+  source_digest: string;
+  method: 'orca.descriptive-sst/1.0';
+  units: 'degree_Celsius';
+  row_count: number;
+  finite_count: number;
+  minimum: number;
+  maximum: number;
+  sample_mean: number;
+  daily_sample_means: Record<string, number>;
+  measurement_definition: string;
+  scientific_status: 'not_validated';
+  limitations: string[];
+}
+
+export interface DemoPublicExport {
+  schema_version: string;
+  result_id: string;
+  result_digest: string;
+  method: string;
+  scientific_status: string;
+  disclosure: string;
+}
+
+export interface OrganizationPage {
+  items: OrganizationSummary[];
+  next_cursor: string | null;
+  page_size: number;
 }
 

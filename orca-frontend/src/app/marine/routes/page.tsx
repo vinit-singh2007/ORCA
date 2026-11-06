@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ORCA 3.0 — M07 Route Exposure Scenarios Screen
  * 
  * DESIGN SPECIFICATION:
@@ -118,12 +118,12 @@ export default function RouteExposuresPage() {
         {/* Header */}
         <div className="border-b border-[#E5E7EB] pb-5">
           <div className="flex items-center gap-2.5">
-            <h1 className="text-xl font-semibold text-[#111827]">Maritime Route Hazard & Wave Exposure</h1>
-            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
+            <h1 className="text-2xl font-semibold text-[#111827]">Maritime Route Hazard & Wave Exposure</h1>
+            <span className="text-xs font-mono px-1.5 py-0.5 rounded border border-[#E5E7EB] bg-[#F8F9FA] text-[#4B5563]">
               M07 · P12
             </span>
           </div>
-          <p className="text-xs text-[#4B5563] mt-1">
+          <p className="text-sm text-[#4B5563] mt-1">
             Evaluate wave heights, headwind drag, squall warnings, and safe passage windows along coastal routes.
           </p>
         </div>
@@ -132,10 +132,10 @@ export default function RouteExposuresPage() {
         <form onSubmit={handleCalculateExposure} className="border border-[#E5E7EB] rounded p-6 bg-[#FFFFFF] space-y-4 text-xs">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-[11px] font-semibold text-[#111827] uppercase tracking-wider block mb-1">
+              <label className="text-xs font-semibold text-[#111827] uppercase tracking-wider block mb-1">
                 Departure Port
               </label>
-              <select
+              <select suppressHydrationWarning
                 value={origin}
                 onChange={(e) => setOrigin(e.target.value)}
                 className="w-full px-3 py-2 border border-[#E5E7EB] rounded bg-[#FFFFFF] text-[#111827] focus:outline-none focus:border-[#111827]"
@@ -148,10 +148,10 @@ export default function RouteExposuresPage() {
             </div>
 
             <div>
-              <label className="text-[11px] font-semibold text-[#111827] uppercase tracking-wider block mb-1">
+              <label className="text-xs font-semibold text-[#111827] uppercase tracking-wider block mb-1">
                 Destination Port / Zone
               </label>
-              <select
+              <select suppressHydrationWarning
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
                 className="w-full px-3 py-2 border border-[#E5E7EB] rounded bg-[#FFFFFF] text-[#111827] focus:outline-none focus:border-[#111827]"
@@ -166,10 +166,10 @@ export default function RouteExposuresPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-[11px] font-semibold text-[#111827] uppercase tracking-wider block mb-1">
+              <label className="text-xs font-semibold text-[#111827] uppercase tracking-wider block mb-1">
                 Cruising Speed (Knots)
               </label>
-              <input
+              <input suppressHydrationWarning
                 type="number"
                 min="4"
                 max="30"
@@ -180,10 +180,10 @@ export default function RouteExposuresPage() {
             </div>
 
             <div>
-              <label className="text-[11px] font-semibold text-[#111827] uppercase tracking-wider block mb-1">
+              <label className="text-xs font-semibold text-[#111827] uppercase tracking-wider block mb-1">
                 Scheduled Departure Time
               </label>
-              <input
+              <input suppressHydrationWarning
                 type="datetime-local"
                 value={departureTime}
                 onChange={(e) => setDepartureTime(e.target.value)}
@@ -199,7 +199,7 @@ export default function RouteExposuresPage() {
             </div>
           )}
 
-          <button
+          <button suppressHydrationWarning
             type="submit"
             disabled={loading}
             className="w-full py-2.5 bg-[#111827] hover:bg-[#1F2937] disabled:opacity-50 text-[#FFFFFF] text-xs font-medium rounded transition flex items-center justify-center gap-1.5"
@@ -230,25 +230,25 @@ export default function RouteExposuresPage() {
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-3 border-t border-[#E5E7EB] text-xs">
               <div>
-                <span className="text-[#6B7280] block text-[11px]">Total Distance</span>
+                <span className="text-[#6B7280] block text-xs">Total Distance</span>
                 <span className="font-mono text-sm font-semibold text-[#111827]">
                   {exposureResult.totalDistanceNM} NM
                 </span>
               </div>
               <div>
-                <span className="text-[#6B7280] block text-[11px]">Transit Time</span>
+                <span className="text-[#6B7280] block text-xs">Transit Time</span>
                 <span className="font-mono text-sm font-semibold text-[#111827]">
                   {exposureResult.estimatedTransitHours} hours
                 </span>
               </div>
               <div>
-                <span className="text-[#6B7280] block text-[11px]">Max Wave Height</span>
+                <span className="text-[#6B7280] block text-xs">Max Wave Height</span>
                 <span className="font-mono text-sm font-semibold text-[#111827]">
                   {exposureResult.maxSignificantWaveHeight}
                 </span>
               </div>
               <div>
-                <span className="text-[#6B7280] block text-[11px]">Peak Wind Gust</span>
+                <span className="text-[#6B7280] block text-xs">Peak Wind Gust</span>
                 <span className="font-mono text-sm font-semibold text-[#111827]">
                   {exposureResult.peakWindGust}
                 </span>
@@ -265,9 +265,9 @@ export default function RouteExposuresPage() {
                   <div key={i} className="p-3 bg-[#F8F9FA] border border-[#E5E7EB] rounded text-xs space-y-1">
                     <div className="flex justify-between items-center">
                       <span className="font-semibold text-[#111827]">{seg.waypoint}</span>
-                      <span className="font-mono text-[11px] text-[#111827]">{seg.wave}</span>
+                      <span className="font-mono text-xs text-[#111827]">{seg.wave}</span>
                     </div>
-                    <div className="text-[11px] text-[#4B5563] flex items-center gap-1.5">
+                    <div className="text-xs text-[#4B5563] flex items-center gap-1.5">
                       <AlertTriangle className="w-3.5 h-3.5 text-[#111827]" />
                       <span>{seg.risk}</span>
                     </div>

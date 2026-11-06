@@ -98,7 +98,7 @@ export default function ReviewInboxPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <button suppressHydrationWarning
               onClick={loadData}
               disabled={loading}
               className="p-1.5 border border-[#E5E7EB] rounded hover:border-[#111827] text-[#111827]"
@@ -117,7 +117,7 @@ export default function ReviewInboxPage() {
 
         {/* Filter Bar */}
         <div className="flex flex-wrap items-center gap-1.5 border-b border-[#E5E7EB] pb-3 text-xs">
-          <button
+          <button suppressHydrationWarning
             onClick={() => setActiveFilter('all')}
             className={`px-3 py-1 rounded transition ${
               activeFilter === 'all'
@@ -127,7 +127,7 @@ export default function ReviewInboxPage() {
           >
             All Items ({investigations.length})
           </button>
-          <button
+          <button suppressHydrationWarning
             onClick={() => setActiveFilter('pending')}
             className={`px-3 py-1 rounded transition ${
               activeFilter === 'pending'
@@ -137,7 +137,7 @@ export default function ReviewInboxPage() {
           >
             Pending Review
           </button>
-          <button
+          <button suppressHydrationWarning
             onClick={() => setActiveFilter('reproduced')}
             className={`px-3 py-1 rounded transition ${
               activeFilter === 'reproduced'
@@ -147,7 +147,7 @@ export default function ReviewInboxPage() {
           >
             Reproduced & Verified
           </button>
-          <button
+          <button suppressHydrationWarning
             onClick={() => setActiveFilter('challenged')}
             className={`px-3 py-1 rounded transition ${
               activeFilter === 'challenged'
@@ -157,7 +157,7 @@ export default function ReviewInboxPage() {
           >
             Challenged / Disputed
           </button>
-          <button
+          <button suppressHydrationWarning
             onClick={() => setActiveFilter('insufficient')}
             className={`px-3 py-1 rounded transition ${
               activeFilter === 'insufficient'

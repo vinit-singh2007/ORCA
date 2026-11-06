@@ -116,7 +116,7 @@ export default function NewInvestigationPage() {
 
         {/* Step Indicator */}
         <div className="flex items-center gap-4 text-xs border-b border-[#E5E7EB] pb-3">
-          <button
+          <button suppressHydrationWarning
             onClick={() => setStep(1)}
             className={`flex items-center gap-1.5 ${
               step === 1 ? 'font-bold text-[#111827]' : 'text-[#6B7280]'
@@ -128,7 +128,7 @@ export default function NewInvestigationPage() {
             <span>Question & Scope</span>
           </button>
           <span>→</span>
-          <button
+          <button suppressHydrationWarning
             onClick={() => setStep(2)}
             className={`flex items-center gap-1.5 ${
               step === 2 ? 'font-bold text-[#111827]' : 'text-[#6B7280]'
@@ -140,7 +140,7 @@ export default function NewInvestigationPage() {
             <span>Temporal & Risk Tier</span>
           </button>
           <span>→</span>
-          <button
+          <button suppressHydrationWarning
             onClick={() => setStep(3)}
             className={`flex items-center gap-1.5 ${
               step === 3 ? 'font-bold text-[#111827]' : 'text-[#6B7280]'
@@ -161,7 +161,7 @@ export default function NewInvestigationPage() {
                 <label className="font-semibold text-[#111827] block mb-1">
                   Primary Research Question *
                 </label>
-                <textarea
+                <textarea suppressHydrationWarning
                   rows={3}
                   required
                   value={question}
@@ -175,7 +175,7 @@ export default function NewInvestigationPage() {
                 <label className="font-semibold text-[#111827] block mb-1">
                   Target Scientific Method *
                 </label>
-                <select
+                <select suppressHydrationWarning
                   value={methodHint}
                   onChange={(e) => setMethodHint(e.target.value)}
                   className="w-full border border-[#E5E7EB] rounded p-2 focus:outline-none focus:border-[#111827]"
@@ -187,7 +187,7 @@ export default function NewInvestigationPage() {
               </div>
 
               <div className="pt-2 flex justify-end">
-                <button
+                <button suppressHydrationWarning
                   type="button"
                   onClick={() => setStep(2)}
                   className="px-4 py-1.5 bg-[#111827] text-[#FFFFFF] rounded font-medium"
@@ -205,7 +205,7 @@ export default function NewInvestigationPage() {
                   <label className="font-semibold text-[#111827] block mb-1">
                     Temporal Window Start *
                   </label>
-                  <input
+                  <input suppressHydrationWarning
                     type="date"
                     required
                     value={startDate}
@@ -217,7 +217,7 @@ export default function NewInvestigationPage() {
                   <label className="font-semibold text-[#111827] block mb-1">
                     Temporal Window End *
                   </label>
-                  <input
+                  <input suppressHydrationWarning
                     type="date"
                     required
                     value={endDate}
@@ -231,7 +231,7 @@ export default function NewInvestigationPage() {
                 <label className="font-semibold text-[#111827] block mb-1">
                   Risk Tier & Safety Boundary
                 </label>
-                <select
+                <select suppressHydrationWarning
                   value={riskTier}
                   onChange={(e) => setRiskTier(e.target.value as 'research' | 'operational' | 'safety_critical')}
                   className="w-full border border-[#E5E7EB] rounded p-2"
@@ -243,14 +243,14 @@ export default function NewInvestigationPage() {
               </div>
 
               <div className="pt-2 flex justify-between">
-                <button
+                <button suppressHydrationWarning
                   type="button"
                   onClick={() => setStep(1)}
                   className="px-3 py-1.5 border border-[#E5E7EB] text-[#4B5563] rounded"
                 >
                   ← Back
                 </button>
-                <button
+                <button suppressHydrationWarning
                   type="button"
                   onClick={() => setStep(3)}
                   className="px-4 py-1.5 bg-[#111827] text-[#FFFFFF] rounded font-medium"
@@ -272,14 +272,14 @@ export default function NewInvestigationPage() {
               </div>
 
               <div className="pt-2 flex justify-between">
-                <button
+                <button suppressHydrationWarning
                   type="button"
                   onClick={() => setStep(2)}
                   className="px-3 py-1.5 border border-[#E5E7EB] text-[#4B5563] rounded"
                 >
                   ← Back
                 </button>
-                <button
+                <button suppressHydrationWarning
                   type="submit"
                   disabled={submitting}
                   className="px-4 py-2 bg-[#111827] text-[#FFFFFF] rounded font-medium disabled:opacity-50"
