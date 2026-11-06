@@ -56,7 +56,7 @@ export function Sidebar() {
       <Link
         href={href}
         title={isCollapsed ? label : undefined}
-        className={`flex items-center gap-2.5 px-3 py-2 text-xs rounded transition ${
+        className={`flex items-center gap-3 px-3 py-2 text-sm rounded transition ${
           isActive
             ? 'bg-[#F3F4F6] text-[#111827] font-semibold border-l-2 border-l-[#111827] pl-2.5'
             : 'text-[#4B5563] hover:text-[#111827] hover:bg-[#F8F9FA]'
@@ -71,13 +71,13 @@ export function Sidebar() {
   return (
     <aside
       className={`sticky top-14 h-[calc(100vh-3.5rem)] bg-[#FFFFFF] border-r border-[#E5E7EB] flex flex-col justify-between p-3 transition-all duration-200 overflow-y-auto shrink-0 z-30 ${
-        isCollapsed ? 'w-16' : 'w-56'
+        isCollapsed ? 'w-16' : 'w-60'
       }`}
     >
       <div className="space-y-4">
         {/* Workspace Title Indicator */}
         {!isCollapsed && (
-          <div className="px-3 text-[11px] font-mono font-semibold uppercase tracking-wider text-[#6B7280]">
+          <div className="px-3 text-xs font-mono font-semibold uppercase tracking-wider text-[#6B7280]">
             {isInstitution && 'Institution'}
             {isNetwork && 'Federated Network'}
             {isMarine && 'Marine Companion'}
@@ -214,11 +214,11 @@ export function Sidebar() {
         {/* Collapse / Expand Toggle Button */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="w-full flex items-center justify-center p-1.5 text-xs text-[#6B7280] hover:text-[#111827] hover:bg-[#F8F9FA] rounded transition"
+          className="w-full flex items-center justify-center p-2 text-xs text-[#6B7280] hover:text-[#111827] hover:bg-[#F8F9FA] rounded transition"
           title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-          {!isCollapsed && <span className="ml-1 text-[11px]">Collapse sidebar</span>}
+          {!isCollapsed && <span className="ml-1.5 text-xs font-medium">Collapse sidebar</span>}
         </button>
       </div>
     </aside>

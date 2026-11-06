@@ -60,7 +60,7 @@ export default function MarineConversationsPage() {
 
   return (
     <Shell>
-      <div className="space-y-6 max-w-4xl">
+      <div className="space-y-6 w-full max-w-6xl">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-[#6B7280]">
           <Link href="/marine" className="hover:text-[#111827]">
