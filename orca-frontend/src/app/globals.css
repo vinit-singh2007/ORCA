@@ -57,3 +57,22 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #9CA3AF;
 }
+
+/* Fluid dashboard canvas: eliminate dead space on the right and expand smoothly when sidebar collapses */
+main {
+  width: 100%;
+}
+
+main > div {
+  width: 100%;
+  max-width: 100%;
+}
+
+main > div > div.space-y-6,
+main > div > div.space-y-5,
+main > div > div.space-y-4 {
+  width: 100%;
+  max-width: 100%;
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+

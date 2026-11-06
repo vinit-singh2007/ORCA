@@ -741,3 +741,79 @@ export interface PrototypeRun {
   updated_at: RFC3339UTC;
 }
 
+// ==========================================
+// 10. Implemented Network & Disagreement Types (Oracle Backend)
+// ==========================================
+
+export interface NetworkOperation {
+  id: UUID;
+  operation_id?: UUID;
+  kind?: string;
+  status: 'queued' | 'running' | 'succeeded' | 'failed' | 'reconciliation_required';
+  resource_ref?: ResourceRef;
+  result?: Record<string, any>;
+  error?: string;
+  created_at: RFC3339UTC;
+  updated_at?: RFC3339UTC;
+}
+
+export interface NetworkTaskClaim {
+  id: UUID;
+  claim_id?: UUID;
+  provider_id: UUID;
+  status: string;
+  created_at: RFC3339UTC;
+  metadata?: Record<string, any>;
+}
+
+export interface NetworkTaskTimelineEvent {
+  stage: string;
+  timestamp: RFC3339UTC;
+  detail?: string;
+  data?: Record<string, any>;
+}
+
+export interface NetworkTaskDetail {
+  id: UUID;
+  project_id: UUID;
+  source_run_id?: UUID;
+  capability?: string;
+  generation: number;
+  status: string;
+  claims: NetworkTaskClaim[];
+  assignments?: Array<{ claim_id: UUID; assigned_at: string; provider_id?: UUID }>;
+  artifacts?: Array<{ id: UUID; digest: string; name?: string }>;
+  operations?: NetworkOperation[];
+  created_at: RFC3339UTC;
+  updated_at?: RFC3339UTC;
+  [key: string]: any;
+}
+
+export interface DisagreementStage {
+  stage: 'producer' | 'review' | 'challenged' | 'correction' | 're_review_resolved' | string;
+  status: 'pending' | 'active' | 'completed' | 'failed';
+  anomaly?: number;
+  details?: string;
+  timestamp?: string;
+  artifacts?: Array<{ id: string; name: string; digest?: string }>;
+}
+
+export interface DisagreementRun {
+  id: UUID;
+  run_id?: UUID;
+  project_id: UUID;
+  status: 'running' | 'challenged' | 'corrected' | 'completed' | 'failed';
+  version: number;
+  stages: DisagreementStage[];
+  anomalies?: number[];
+  synthetic: true;
+  approve_public_reference: boolean;
+  public_reference?: {
+    tx_hash?: string;
+    receipt?: string;
+  };
+  created_at: RFC3339UTC;
+  updated_at?: RFC3339UTC;
+}
+
+

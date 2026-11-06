@@ -403,7 +403,7 @@ export default function PrototypeRunPage() {
 
   return (
     <Shell>
-      <div className="space-y-6 max-w-4xl">
+      <div className="space-y-6 w-full">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-[#6B7280]">
           <Link href={`/org/${orgId}/research/investigations`} className="hover:underline">Research</Link>

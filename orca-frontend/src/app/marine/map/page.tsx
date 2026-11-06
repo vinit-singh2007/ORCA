@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ORCA 3.0 — M04 Marine Map & Environmental Conditions Screen
  * 
  * DESIGN SPECIFICATION:
@@ -47,7 +47,7 @@ export default function MarineMapPage() {
 
   return (
     <Shell>
-      <div className="space-y-4 max-w-6xl">
+      <div className="space-y-4 w-full">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-[#6B7280]">
           <Link href="/marine" className="hover:text-[#111827]">

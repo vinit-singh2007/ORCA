@@ -51,7 +51,7 @@ export function LoginForm({ onLoginSuccess }: { onLoginSuccess?: () => void }) {
         <div className="mb-5 p-3 rounded-lg border border-amber-200 bg-amber-50 text-xs text-amber-900 flex items-start gap-2">
           <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
           <div>
-            <strong>LAN Backend Notice:</strong> Unable to ping <code className="bg-amber-100 px-1 rounded">{process.env.NEXT_PUBLIC_API_BASE_URL || 'http://10.71.71.246:8000'}/livez</code>. Ensure Shakti&apos;s laptop is awake and on the same Wi-Fi.
+            <strong>Backend Connection Notice:</strong> Unable to connect to ORCA Gateway at <code className="bg-amber-100 px-1 rounded">{process.env.NEXT_PUBLIC_API_BASE_URL || 'https://orca.130.210.15.82.sslip.io'}/livez</code>. Please verify network connectivity.
           </div>
         </div>
       )}

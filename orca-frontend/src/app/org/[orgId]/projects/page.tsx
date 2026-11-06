@@ -100,7 +100,7 @@ export default function ProjectsIndexPage() {
 
   return (
     <Shell>
-      <div className="space-y-6 max-w-6xl">
+      <div className="space-y-6 w-full">
         {/* Breadcrumb Navigation */}
         <div className="flex items-center gap-2 text-xs text-[#6B7280]">
           <Link href={`/org/${orgId}/overview`} className="hover:text-[#111827]">

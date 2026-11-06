@@ -13,6 +13,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSidebar } from '@/context/SidebarContext';
 import {
   Activity,
   FolderKanban,
@@ -43,7 +44,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const orgMatch = pathname.match(/\/org\/([^/]+)/);
   const orgId = orgMatch ? orgMatch[1] : '';
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { isCollapsed, toggle } = useSidebar();
   const [showSettings, setShowSettings] = useState(false);
 
   // Derive active workspace mode strictly from current URL path
@@ -93,6 +94,7 @@ export function Sidebar() {
             {navItem(orgId ? `/org/${orgId}/overview` : '/workspaces', 'Overview', <Activity className="w-4 h-4" />)}
             {navItem(orgId ? `/org/${orgId}/research/demo` : '/workspaces', 'Research Demo', <Sparkles className="w-4 h-4 text-[#111827]" />)}
             {navItem(orgId ? `/org/${orgId}/research/prototype/new` : '/workspaces', 'Prototype Research', <FlaskConical className="w-4 h-4" />)}
+            {navItem(orgId ? `/org/${orgId}/research/disagreements` : '/workspaces', 'Disagreement Demo', <ShieldAlert className="w-4 h-4" />)}
             {navItem(orgId ? `/org/${orgId}/projects` : '/workspaces', 'Projects', <FolderKanban className="w-4 h-4" />)}
             {navItem(orgId ? `/org/${orgId}/research/investigations` : '/workspaces', 'Investigations', <FileSearch className="w-4 h-4" />)}
             {navItem(orgId ? `/org/${orgId}/data/products` : '/workspaces', 'Data & Methods', <Database className="w-4 h-4" />)}
@@ -221,7 +223,7 @@ export function Sidebar() {
         <button
           type="button"
           suppressHydrationWarning
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={toggle}
           className="w-full flex items-center justify-center p-2 text-xs text-[#6B7280] hover:text-[#111827] hover:bg-[#F8F9FA] rounded transition"
           title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >

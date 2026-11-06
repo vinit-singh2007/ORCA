@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ORCA 3.0 — M07 Route Exposure Scenarios Screen
  * 
  * DESIGN SPECIFICATION:
@@ -105,7 +105,7 @@ export default function RouteExposuresPage() {
 
   return (
     <Shell>
-      <div className="space-y-6 w-full max-w-6xl">
+      <div className="space-y-6 w-full">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-[#6B7280]">
           <Link href="/marine" className="hover:text-[#111827]">

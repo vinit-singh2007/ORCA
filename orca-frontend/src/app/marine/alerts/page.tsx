@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ORCA 3.0 — M08 Marine Advisories & Hazard Subscriptions Screen
  * 
  * DESIGN SPECIFICATION:
@@ -75,7 +75,7 @@ export default function MarineAlertsPage() {
 
   return (
     <Shell>
-      <div className="space-y-6 max-w-5xl">
+      <div className="space-y-6 w-full">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-[#6B7280]">
           <Link href="/marine" className="hover:text-[#111827]">

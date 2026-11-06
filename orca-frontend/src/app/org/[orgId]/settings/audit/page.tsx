@@ -63,7 +63,7 @@ export default function AuditLogPage() {
 
   return (
     <Shell>
-      <div className="space-y-6 max-w-5xl">
+      <div className="space-y-6 w-full">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-[#6B7280]">
           <Link href={orgId ? `/org/${orgId}/overview` : '/workspaces'} className="hover:text-[#111827]">

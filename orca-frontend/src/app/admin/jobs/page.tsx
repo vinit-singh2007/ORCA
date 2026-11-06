@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ORCA 3.0 — O03 Durable Compute Jobs & Worker Leases Screen
  * 
  * DESIGN SPECIFICATION:
@@ -66,7 +66,7 @@ export default function JobQueuesAdminPage() {
 
   return (
     <Shell>
-      <div className="space-y-6 max-w-5xl">
+      <div className="space-y-6 w-full">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-[#6B7280]">
           <Link href="/admin/system" className="hover:text-[#111827]">

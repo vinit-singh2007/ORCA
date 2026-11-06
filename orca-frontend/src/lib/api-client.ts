@@ -51,7 +51,7 @@ export class OrcaApiClient {
       config.baseUrl ||
       process.env.NEXT_PUBLIC_API_BASE_URL ||
       process.env.NEXT_PUBLIC_ORCA_API_URL ||
-      'http://10.71.71.246:8000';
+      'https://orca.130.210.15.82.sslip.io';
     this.getAuthToken = config.getAuthToken;
     this.orgId = config.orgId;
   }
@@ -931,66 +931,134 @@ export class OrcaApiClient {
   }
 
   // ========================================================
-  // §3.12 Arkiv Task Coordination & Public Ledger
+  // §3.12 Arkiv Task Coordination & Public Ledger (Oracle Backend Contract)
   // ========================================================
 
-  /** GET /v1/network/tasks - Public research task board */
-  async listNetworkTasks(params?: {
-    cursor?: string;
-    limit?: number;
-    state?: string;
-    capability?: string;
-  }) {
-    return this.request<T.Page<T.ExternalTask>>('/v1/network/tasks', { params });
-  }
-
-  /** POST /v1/network/tasks - Publish research task to Arkiv */
-  async createNetworkTask(body: {
-    investigation_id: string;
-    title: string;
-    required_capability: string;
-    assignment_policy: 'single' | 'multi';
-    deadline: string;
-  }) {
-    return this.request<T.ExternalTask>('/v1/network/tasks', {
-      method: 'POST',
-      body: JSON.stringify(body),
+  /** GET /v1/network/tasks?project_id=UUID - Public research task board (requires project_id) */
+  async listNetworkTasks(projectId: string): Promise<T.NetworkTaskDetail[]> {
+    return this.request<T.NetworkTaskDetail[]>('/v1/network/tasks', {
+      params: { project_id: projectId },
     });
   }
 
-  /** GET /v1/network/tasks/{id} - Task details */
-  async getNetworkTask(id: string) {
-    return this.request<T.ExternalTask>(`/v1/network/tasks/${id}`);
-  }
-
-  /** GET /v1/network/tasks/{id}/claims - Provider task claims */
-  async listTaskClaims(taskId: string, params?: { cursor?: string }) {
-    return this.request<T.Page<T.TaskClaim>>(`/v1/network/tasks/${taskId}/claims`, { params });
-  }
-
-  /** POST /v1/network/tasks/{id}/assignments - Authoritative provider assignment */
-  async assignTaskProvider(taskId: string, body: { claim_id: string; agent_id: string }) {
-    return this.request<{
-      task_id: string;
-      assigned_agent_id: string;
-      assignment_status: 'assigned' | 'dispatched';
-      assigned_at: string;
-    }>(`/v1/network/tasks/${taskId}/assignments`, {
+  /** POST /v1/network/tasks - Publish research task to Arkiv (returns NetworkOperation 202) */
+  async createNetworkTask(
+    body: {
+      project_id: string;
+      source_run_id: string;
+      capability?: string;
+      review_of?: string;
+      correction_of?: string;
+      approve_public_reference?: boolean;
+      deadline_seconds?: number;
+    },
+    idempotencyKey?: string
+  ): Promise<T.NetworkOperation> {
+    return this.request<T.NetworkOperation>('/v1/network/tasks', {
       method: 'POST',
       body: JSON.stringify(body),
+      idempotencyKey: idempotencyKey || this.generateIdempotencyKey(),
     });
   }
 
-  /** GET /v1/network/tasks/{id}/a2a-sessions - Live telemetry */
-  async getTaskA2ASessions(taskId: string) {
-    return this.request<{
-      task_id: string;
-      session_id: string;
-      status: 'active' | 'completed' | 'failed';
-      transport: string;
-      current_stage: string;
-      progress_pct: number;
-    }>(`/v1/network/tasks/${taskId}/a2a-sessions`);
+  /** GET /v1/network/tasks/{id}?project_id=UUID - Task details with claims & generation */
+  async getNetworkTask(id: string, projectId: string): Promise<T.NetworkTaskDetail> {
+    return this.request<T.NetworkTaskDetail>(`/v1/network/tasks/${id}`, {
+      params: { project_id: projectId },
+    });
+  }
+
+  /** POST /v1/network/tasks/{id}/claims?project_id=UUID - Request provider claim */
+  async claimNetworkTask(
+    taskId: string,
+    projectId: string,
+    providerId: string,
+    idempotencyKey?: string
+  ): Promise<T.NetworkTaskClaim> {
+    return this.request<T.NetworkTaskClaim>(`/v1/network/tasks/${taskId}/claims`, {
+      method: 'POST',
+      params: { project_id: projectId },
+      body: JSON.stringify({ provider_id: providerId }),
+      idempotencyKey: idempotencyKey || this.generateIdempotencyKey(),
+    });
+  }
+
+  /** POST /v1/network/tasks/{id}/assignments?project_id=UUID - Authoritative provider assignment */
+  async assignTaskProvider(
+    taskId: string,
+    projectId: string,
+    body: { claim_id: string; expected_generation: number },
+    idempotencyKey?: string
+  ): Promise<T.NetworkOperation> {
+    return this.request<T.NetworkOperation>(`/v1/network/tasks/${taskId}/assignments`, {
+      method: 'POST',
+      params: { project_id: projectId },
+      body: JSON.stringify(body),
+      idempotencyKey: idempotencyKey || this.generateIdempotencyKey(),
+    });
+  }
+
+  /** GET /v1/network/tasks/{id}/timeline?project_id=UUID - Real task timeline & stages */
+  async getNetworkTaskTimeline(taskId: string, projectId: string): Promise<T.NetworkTaskTimelineEvent[]> {
+    return this.request<T.NetworkTaskTimelineEvent[]>(`/v1/network/tasks/${taskId}/timeline`, {
+      params: { project_id: projectId },
+    });
+  }
+
+  /** GET /v1/network/operations/{id}?project_id=UUID - Poll async network operations */
+  async getNetworkOperation(operationId: string, projectId: string): Promise<T.NetworkOperation> {
+    return this.request<T.NetworkOperation>(`/v1/network/operations/${operationId}`, {
+      params: { project_id: projectId },
+    });
+  }
+
+  // ========================================================
+  // §3.12.1 Intentional Disagreement Demo Adapter (Handoff 7 Nov 2026)
+  // ========================================================
+
+  /** POST /v1/demo/disagreements - Trigger intentional disagreement run */
+  async createDisagreementRun(
+    projectId: string,
+    approvePublicReference: boolean = false,
+    idempotencyKey?: string
+  ): Promise<T.DisagreementRun> {
+    return this.request<T.DisagreementRun>('/v1/demo/disagreements', {
+      method: 'POST',
+      body: JSON.stringify({
+        project_id: projectId,
+        approve_public_reference: approvePublicReference,
+      }),
+      idempotencyKey: idempotencyKey || this.generateIdempotencyKey(),
+    });
+  }
+
+  /** GET /v1/demo/disagreements?project_id=UUID - List disagreement runs for project */
+  async listDisagreements(projectId: string): Promise<T.DisagreementRun[]> {
+    return this.request<T.DisagreementRun[]>('/v1/demo/disagreements', {
+      params: { project_id: projectId },
+    });
+  }
+
+  /** GET /v1/demo/disagreements/{run_id}?project_id=UUID - Poll disagreement run progress */
+  async getDisagreementRun(runId: string, projectId: string): Promise<T.DisagreementRun> {
+    return this.request<T.DisagreementRun>(`/v1/demo/disagreements/${runId}`, {
+      params: { project_id: projectId },
+    });
+  }
+
+  /** POST /v1/demo/disagreements/{run_id}/correct?project_id=UUID - Trigger clean-input rerun */
+  async correctDisagreementRun(
+    runId: string,
+    projectId: string,
+    expectedVersion: number,
+    idempotencyKey?: string
+  ): Promise<T.DisagreementRun> {
+    return this.request<T.DisagreementRun>(`/v1/demo/disagreements/${runId}/correct`, {
+      method: 'POST',
+      params: { project_id: projectId },
+      body: JSON.stringify({ expected_version: expectedVersion }),
+      idempotencyKey: idempotencyKey || this.generateIdempotencyKey(),
+    });
   }
 
   /** POST /v1/arkiv/queries - Query raw indexed Arkiv entities */

@@ -69,7 +69,7 @@ export default function InvestigationsLibraryPage() {
 
   return (
     <Shell>
-      <div className="space-y-6 max-w-6xl">
+      <div className="space-y-6 w-full">
         {/* Header Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5E7EB] pb-5">
           <div>
@@ -151,6 +151,30 @@ export default function InvestigationsLibraryPage() {
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Start New Prototype Investigation</span>
+          </Link>
+        </div>
+
+        {/* Intentional Disagreement Studio Banner */}
+        <div className="p-4 border border-amber-200 bg-amber-50 rounded flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-sm text-amber-950">
+                A2A Intentional Disagreement &amp; Challenge Studio
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-900 text-amber-100 font-bold uppercase">
+                Synthetic Flaw Protocol
+              </span>
+            </div>
+            <p className="text-xs text-amber-800">
+              Live agent review demonstration: injects ~2°C synthetic flaw, pauses at verification challenge, and authorizes clean-input rerun.
+            </p>
+          </div>
+          <Link
+            href={`/org/${orgId}/research/disagreements`}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-amber-900 text-white text-xs font-semibold rounded hover:bg-amber-950 transition shrink-0 self-start sm:self-center"
+          >
+            <span>Open Disagreement Studio</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 

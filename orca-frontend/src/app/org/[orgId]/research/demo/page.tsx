@@ -180,7 +180,7 @@ export default function ResearchDemoPage() {
 
   return (
     <Shell>
-      <div className="space-y-6 w-full max-w-6xl pb-12">
+      <div className="space-y-6 w-full pb-12">
         {/* Navigation Breadcrumbs */}
         <div className="flex items-center gap-2 text-xs text-[#6B7280]">
           <Link href={`/org/${activeOrgId}/overview`} className="hover:text-[#111827]">
