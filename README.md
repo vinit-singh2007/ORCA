@@ -11,6 +11,6 @@
   * Implements the 14 REST endpoint contracts specified in [`docs/API_ENDPOINTS.md`](docs/API_ENDPOINTS.md).
   * Handles cryptographic state transitions, computation dispatching, and Arkiv Rabdi ledger indexing.
 
-## 🔗 Architecture & API Contract **[Vaishali Mali]**
+## 🔗 Architecture & API Contract Built by **[Vaishali Mali]**
 The frontend is decoupled from the backend and connects via standard REST APIs configured through `NEXT_PUBLIC_ORCA_API_URL`.
 * **API Specification**: See complete endpoint definitions in [`docs/API_ENDPOINTS.md`](docs/API_ENDPOINTS.md).
