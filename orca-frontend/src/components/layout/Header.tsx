@@ -160,18 +160,25 @@ export function Header() {
       <div className="flex items-center gap-3">
         {/* Universal Search (⌘K / Ctrl+K) */}
         <div className="relative hidden sm:block w-48 lg:w-64">
-          <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#6B7280]" />
-          <input
-            type="text"
-            placeholder="Search projects, tasks (⌘K)..."
+          <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#6B7280] pointer-events-none" />
+          <button
+            type="button"
+            suppressHydrationWarning
             onClick={() => setSearchOpen(true)}
-            className="w-full pl-8 pr-3 py-1.5 text-xs border border-[#E5E7EB] rounded bg-[#F8F9FA] text-[#111827] placeholder:text-[#6B7280] focus:bg-[#FFFFFF] focus:outline-none focus:border-[#111827]"
-          />
+            className="w-full pl-8 pr-3 py-1.5 text-xs text-left border border-[#E5E7EB] rounded bg-[#F8F9FA] text-[#6B7280] hover:bg-[#FFFFFF] hover:border-[#111827] transition flex items-center justify-between"
+          >
+            <span className="truncate">Search projects, tasks...</span>
+            <kbd className="hidden lg:inline-block font-mono text-[10px] bg-[#FFFFFF] border border-[#E5E7EB] px-1.5 py-0.2 rounded text-[#6B7280]">
+              ⌘K
+            </kbd>
+          </button>
         </div>
 
         {/* Organization Switcher Dropdown */}
         <div className="relative">
           <button
+            type="button"
+            suppressHydrationWarning
             onClick={() => setShowOrgDropdown(!showOrgDropdown)}
             className="flex items-center gap-2 px-2.5 py-1.5 border border-[#E5E7EB] hover:border-[#111827] bg-[#FFFFFF] rounded text-xs transition"
           >
